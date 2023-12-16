@@ -1,0 +1,38 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Voxel Game 2.0"
+run/main_scene="res://player/player.tscn"
+config/features=PackedStringArray("4.2", "C#", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+InventorySystem="*res://addons/inventory-system/core/inventory_system.tscn"
+
+[dotnet]
+
+project/assembly_name="Voxel Game 2.0"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/finite_state_machine/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/inventory-system/plugin.cfg")
+
+[physics]
+
+3d/physics_engine="JoltPhysics3D"
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_environment="res://default_env.tres"
