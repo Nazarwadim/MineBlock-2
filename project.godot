@@ -11,13 +11,17 @@ config_version=5
 [application]
 
 config/name="Voxel Game 2.0"
-run/main_scene="res://player/player.tscn"
+run/main_scene="res://Scenes/game.tscn"
 config/features=PackedStringArray("4.2", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
 InventorySystem="*res://addons/inventory-system/core/inventory_system.tscn"
+
+[debug]
+
+settings/stdout/print_fps=true
 
 [dotnet]
 

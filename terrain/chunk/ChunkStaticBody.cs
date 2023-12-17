@@ -16,5 +16,7 @@ public partial class ChunkStaticBody : StaticBody3D
     {
         AddChild(ColisionShape);
         AddChild(MeshInstance);
+        ulong start = Time.GetTicksMsec();
+        GD.Print(Time.GetTicksMsec() - start);
     }
 }

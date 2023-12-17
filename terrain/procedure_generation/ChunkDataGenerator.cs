@@ -10,11 +10,14 @@ namespace ProcedureGeneration
         public const short CHUNK_SIZE = 16;
         public const short CHUNK_HEIGHT = 255;
         public const float RANDOM_TO_GENERATE_BLOCK = 0.05f;
-        public static ChunkResource.Types[,,] GetRandomChunk(ulong seed)
+        private static readonly PerlineNoise _noise = new PerlineNoise((int)Seed);
+        public static ulong Seed = 0;
+
+        public static ChunkResource.Types[,,] GetRandomChunk()
         {
             ChunkResource.Types[,,] chunk = new ChunkResource.Types[CHUNK_SIZE, CHUNK_HEIGHT, CHUNK_SIZE];
             RandomNumberGenerator random = new RandomNumberGenerator();
-            random.Seed = seed;
+            random.Seed = Seed;
             for (int x = 0; x < chunk.GetLength(0); x++)
             {
                 for (int y = 0; y < chunk.GetLength(1); y++)
@@ -30,21 +33,21 @@ namespace ProcedureGeneration
             }
             return chunk;
         }
-        public static byte[,] GetChunkHeightsFromNoise(PerlineNoise noise, Vector2I chunkPosition)
+        public static byte[,] GetChunkHeightsFromNoise(Vector2I chunkPosition)
         {
             byte[,] heights = new byte[CHUNK_SIZE, CHUNK_SIZE];
             for (int i = 0; i < CHUNK_SIZE; ++i)
             {
                 for (int j = 0; j < CHUNK_SIZE; ++j)
                 {
-                    float noise_pos = noise.GetNoise2D(i + chunkPosition.X, j + chunkPosition.Y);
+                    float noise_pos = _noise.GetNoise2D(i + chunkPosition.X, j + chunkPosition.Y);
                     heights[i, j] = (byte)Math.Round(Mathf.Remap(noise_pos, -1, 1, 0, 255));
                 }
             }
             return heights;
         }
 
-        public static byte[,,] GetChunkWithTerrain(PerlineNoise noise, Vector2I chunkPosition, byte[,] chunk_heights)
+        public static byte[,,] GetChunkWithTerrain(Vector2I chunkPosition, byte[,] chunk_heights)
         {
             byte[,,] chunk = new byte[CHUNK_SIZE, CHUNK_HEIGHT, CHUNK_SIZE];
             for (int x = 0; x < chunk.GetLength(0); ++x)
@@ -58,6 +61,11 @@ namespace ProcedureGeneration
                 }
             }
             return chunk;
+        }
+        public static byte[,,] GetChunkWithTerrain(Vector2I chunkPosition)
+        {
+            byte[,] chunk_heights = GetChunkHeightsFromNoise(chunkPosition);
+            return GetChunkWithTerrain(chunkPosition, chunk_heights);
         }
     }
 

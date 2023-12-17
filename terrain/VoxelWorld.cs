@@ -8,32 +8,32 @@ public partial class VoxelWorld:Node
 {
     public VoxelWorld()
     {
-        _perline_noise = new PerlineNoise(Seed);
         _chunksResources = new Dictionary<Vector2I, ChunkResource>();
         _chunksBodies = new Dictionary<Vector2I, ChunkStaticBody>();
     }
-    [Export] int Seed;
-    private PerlineNoise _perline_noise;
+    [Export] ulong Seed;
     private Dictionary<Vector2I, ChunkResource> _chunksResources;
     private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
 
     public override void _Ready()
     {
         
+        ChunkDataGenerator.Seed = Seed;
         var chunkPosition = new Vector2I(0,0);
-        byte[,] chunkHeights = ChunkDataGenerator.GetChunkHeightsFromNoise(_perline_noise, chunkPosition);
-        byte[, ,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(_perline_noise, chunkPosition, chunkHeights);
+        byte[,] chunkHeights = ChunkDataGenerator.GetChunkHeightsFromNoise(chunkPosition);
+        byte[, ,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
         
         var chunk = new ChunkResource(chunkData, chunkPosition, chunkHeights);
         
         _chunksResources.Add(chunkPosition, chunk);
         ChunkStaticBody chunkBody = new ChunkStaticBody();
-       
         chunkBody.MeshInstance.Mesh = ChunksMeshGenerator.GenerateChunkMesh(chunk, this);
-        
         chunkBody.MeshInstance.MaterialOverride = GD.Load<Material>("res://textures/material.tres");
-        AddChild(chunkBody);
+        //AddChild(chunkBody);
+        
     }
+
+
 
     //Summary:
     //  This get you block type (Block.Type enum) from block global position.
@@ -45,7 +45,6 @@ public partial class VoxelWorld:Node
         if(_chunksResources.TryGetValue(chunkPosition, out chunkResource))
         {   
             Vector3I subPosition = blockGlobalPosition - new Vector3I(chunkPosition.X, 0, chunkPosition.Y) * ChunkDataGenerator.CHUNK_SIZE;
-            GD.Print(subPosition);
             return chunkResource.Data[subPosition.X,subPosition.Y,subPosition.Z];
         }
         return ChunkResource.Types.CobbleStone;
@@ -59,7 +58,7 @@ public partial class VoxelWorld:Node
     }
     private Vector2I _GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
     {
-        Vector2I chunkPosition = new Vector2I(blockGlobalPosition.X % ChunkDataGenerator.CHUNK_SIZE,blockGlobalPosition.Z %ChunkDataGenerator.CHUNK_SIZE);
+        Vector2I chunkPosition = new Vector2I(blockGlobalPosition.X / ChunkDataGenerator.CHUNK_SIZE,blockGlobalPosition.Z /ChunkDataGenerator.CHUNK_SIZE);
         if(blockGlobalPosition.X < 0)
         {
             --chunkPosition.X;
