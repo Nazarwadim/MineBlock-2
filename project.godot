@@ -30,6 +30,7 @@ enabled=PackedStringArray("res://addons/finite_state_machine/plugin.cfg", "res:/
 [physics]
 
 3d/physics_engine="JoltPhysics3D"
+3d/default_gravity=1.0
 
 [rendering]
 

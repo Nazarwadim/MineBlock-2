@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://1s4asqpay67m"]
+[gd_scene load_steps=9 format=3 uid="uid://1s4asqpay67m"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b4tnsxv70xmon" path="res://textures/texture_sheet.png" id="2"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="3_8ei63"]
+[ext_resource type="ArrayMesh" path="res://mesh.res" id="4_spifg"]
+[ext_resource type="Material" uid="uid://wfvc2s58yyad" path="res://textures/material.tres" id="5_w8vd8"]
 
 [sub_resource type="CylinderShape3D" id="1"]
 height = 1.75
@@ -15,6 +17,7 @@ atlas = ExtResource("2")
 region = Rect2(0, 0, 64, 64)
 
 [node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 146.05, 0)
 collision_layer = 0
 script = ExtResource("1")
 
@@ -52,3 +55,10 @@ expand_mode = 1
 
 [node name="VoxelWorld" type="Node" parent="."]
 script = ExtResource("3_8ei63")
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.55875, 119.159, -12.7022)
+mesh = ExtResource("4_spifg")
+surface_material_override/0 = ExtResource("5_w8vd8")
+
+[connection signal="child_entered_tree" from="VoxelWorld" to="." method="_on_voxel_world_child_entered_tree"]

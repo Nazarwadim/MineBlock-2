@@ -1,5 +1,5 @@
 using Godot;
-
+using ProcedureGeneration;
 
 
 namespace ChunkBodyGeneration{
@@ -11,10 +11,10 @@ public static class ChunksBodyGenerator
     const float TEXTURE_TILE_SIZE = 1.0f / TEXTURE_SHEET_WIDTH;
 
 
-    public static Vector2[] CalculateBlockUvs(Block.Type blockId)
+    public static Vector2[] CalculateBlockUvs(int blockId)
     {
-        int row = ((int)blockId) / TEXTURE_SHEET_WIDTH;
-        int col = ((int)blockId) % TEXTURE_SHEET_WIDTH;
+        int row = blockId / TEXTURE_SHEET_WIDTH;
+        int col = blockId % TEXTURE_SHEET_WIDTH;
         Vector2[] array = {
         new Vector2(col + 0.01f, row + 0.01f) * TEXTURE_TILE_SIZE, 
         new Vector2(col + 0.01f, row + 0.99f) * TEXTURE_TILE_SIZE, 
@@ -39,9 +39,9 @@ public static class ChunksBodyGenerator
         return array;
     }
 
-    public static bool IsBlockTransparent(byte blockId)
+    public static bool IsBlockTransparent(ChunkResource.Types blockId)
     {
-        return blockId == 0 || (blockId > 25 && blockId < 30);
+        return blockId == ChunkResource.Types.Air || ((int)blockId > 25 && (int)blockId < 30);
     }
 }
 }

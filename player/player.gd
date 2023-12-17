@@ -40,3 +40,7 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			_mouse_motion += event.relative
+
+
+func _on_voxel_world_child_entered_tree(node:ChunkStaticBody):
+	ResourceSaver.save( node.MeshInstance.mesh, "res://mesh.res")
