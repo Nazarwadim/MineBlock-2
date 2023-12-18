@@ -15,11 +15,34 @@ public partial class ChunkResource : Resource
         Air,
         CobbleStone,
         Dirt,
-        Grass,
+        GrassBlock,
         Planks,
         Furnace,
-        
+        Godot,
+        Bricks,
+        Cobblestone,
+        Deepslate,
+        Sand,
+        Gravel,
+        Wood,
+        DiamondBlock,
+        IronBlock,
+        GoldBlock,
+        GoldOre ,
+        CopperOre,
+        Coal,
+        BookShelf,
+        MossyCobblestone,
+        Obsidian,
+        DiamondOre,
+        IronOre,
+        Sponge,
+        OakLeaves,
+        BirchLeaves,
+        Grass,
+        WitheredGrass
     }
+
     [Export]public Vector2I Position;
     [Export] private byte[] _data;
 

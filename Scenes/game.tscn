@@ -1,11 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=9 format=3 uid="uid://cft5uj8g6a10"]
 
+[ext_resource type="Script" path="res://terrain/ChunkUpdater.cs" id="2_3004u"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
+[ext_resource type="Texture2D" uid="uid://bh6p41nk43blv" path="res://textures/Epic_BlueSunset_EquiRect_flat.png" id="2_yunj6"]
 [ext_resource type="Script" path="res://Scenes/free_look_camera.gd" id="3_s2chx"]
-[ext_resource type="Texture2D" uid="uid://blusv7ddjlb65" path="res://textures/AllSky_Overcast4_Low.png" id="3_w880x"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_yc00y"]
-panorama = ExtResource("3_w880x")
+panorama = ExtResource("2_yunj6")
 
 [sub_resource type="Sky" id="Sky_u6213"]
 sky_material = SubResource("PanoramaSkyMaterial_yc00y")
@@ -13,32 +14,42 @@ sky_material = SubResource("PanoramaSkyMaterial_yc00y")
 [sub_resource type="Environment" id="Environment_60wp7"]
 background_mode = 2
 sky = SubResource("Sky_u6213")
-tonemap_mode = 3
-tonemap_white = 6.0
+tonemap_mode = 2
 glow_enabled = true
 fog_light_energy = 1.34
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0079
+volumetric_fog_density = 0.0039
+volumetric_fog_albedo = Color(1, 0.698039, 0.34902, 1)
 
 [sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_gwx5p"]
 auto_exposure_enabled = true
-frustum_focal_length = 16.14
+auto_exposure_scale = 0.2
+auto_exposure_speed = 0.4
+frustum_focal_length = 15.04
 
 [node name="Game" type="Node"]
 
 [node name="VoxelWorld" type="Node" parent="."]
 script = ExtResource("2_yr4dd")
+Seed = 1
+
+[node name="ChunkUpdater" type="Node" parent="VoxelWorld"]
+script = ExtResource("2_3004u")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_60wp7")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(-0.12515, 0.991635, 0.0315966, 0.714496, 0.067986, 0.696328, 0.688355, 0.109721, -0.717028, -0.0205836, 0, -0.0831834)
+transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871558, 0.996195, -0.0205836, 0, -0.0831834)
 light_bake_mode = 0
-directional_shadow_fade_start = 0.028
-directional_shadow_max_distance = 3265.0
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_max_distance = 676.3
 
 [node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 150, 0)
 attributes = SubResource("CameraAttributesPhysical_gwx5p")
 current = true
 script = ExtResource("3_s2chx")
+
+[connection signal="position_XZ_changed" from="Camera3D" to="VoxelWorld/ChunkUpdater" method="_OnPlayerPositionChanged"]

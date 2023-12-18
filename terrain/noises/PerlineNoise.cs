@@ -6,6 +6,8 @@ public partial class PerlineNoise : FastNoiseLite
     {
         Seed = seed;
         Frequency = 0.005f;
-        FractalGain = 0.4f;
+        FractalOctaves = 6;
+        FractalGain = 0.7f;
+        FractalLacunarity = 1.35f;
     }
 }

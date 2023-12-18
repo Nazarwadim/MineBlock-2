@@ -34,6 +34,9 @@ var pick_joint: JoltGeneric6DOFJoint3D
 
 @onready var target_position := position
 
+signal position_XZ_changed(position:Vector2i)
+
+var position_before:Vector2i
 func _enter_tree() -> void:
 	pick_anchor = AnimatableBody3D.new()
 	pick_anchor.collision_layer = 0
@@ -109,7 +112,12 @@ func _process(delta: float) -> void:
 
 func _physics_process(_delta: float) -> void:
 	_move_pick(get_viewport().get_mouse_position())
-
+	if(Vector2i(position.x, position.z) != position_before):
+		position_before = Vector2i(position.x, position.z)
+		position_XZ_changed.emit(position_before)
+	
+	
+	
 func _start_picking(mouse_position: Vector2) -> void:
 	if picking:
 		return

@@ -5,6 +5,7 @@ using ProcedureGeneration;
 using System.Threading;
 using System;
 using ChunksSerealisation;
+using System.Drawing;
 
 [GlobalClass]
 public partial class VoxelWorld:Node
@@ -22,14 +23,11 @@ public partial class VoxelWorld:Node
     public override void _Ready()
     {
         ChunkDataGenerator.Seed = Seed;
-        
 
         _GenerateChunkData();
-
-
         
-        _thread[0] = new Thread(_GenerateChunksByThreadBackRight);
-        _thread[1] = new Thread(_GenerateChunksByThreadBackLeft);
+        _thread[0] =  new Thread(_GenerateChunksByThreadBackRight);
+        _thread[1]=  new Thread(_GenerateChunksByThreadBackLeft);
         _thread[2] = new Thread(_GenerateChunksByThreadForwardRight);
         _thread[3] = new Thread(_GenerateChunksByThreadForwardLeft);
         foreach (Thread thread in _thread)
@@ -44,14 +42,16 @@ public partial class VoxelWorld:Node
         ChunkSaver.SaveStaticTerrain(_chunksResources);
         foreach (var thread in _thread)
         {
+            _exit_threads = true;
             thread.Join();
         }
     }
 
-    private int _renderDistance = 50;
+    private int _renderDistance = 0;
+    private bool _exit_threads = false;
     private void _GenerateChunksByThreadForwardRight()
     {
-        for(int i = 0; i < _renderDistance;i++)
+        for(int i = 0; i < _renderDistance && !_exit_threads;i++)
         {
             for(int j =0; j > -_renderDistance; --j)
                 GenerateChunk(new Vector2I(i,j));
@@ -59,7 +59,7 @@ public partial class VoxelWorld:Node
     }
     private void _GenerateChunksByThreadForwardLeft()
     {
-        for(int i = 0; i > -_renderDistance;i--)
+        for(int i = 0; i > -_renderDistance && !_exit_threads;i--)
         {
             for(int j = 0; j > -_renderDistance; --j)
                 GenerateChunk(new Vector2I(i,j));
@@ -67,7 +67,7 @@ public partial class VoxelWorld:Node
     }
     private void _GenerateChunksByThreadBackRight()
     {
-        for(int i = 0; i < _renderDistance;i++)
+        for(int i = 0; i < _renderDistance && !_exit_threads;i++)
         {
             for(int j = 0; j < _renderDistance;j++)
                 GenerateChunk(new Vector2I(i,j));
@@ -75,7 +75,7 @@ public partial class VoxelWorld:Node
     }
     private void _GenerateChunksByThreadBackLeft()
     {
-        for(int i = 0 ; i > -_renderDistance;i--)
+        for(int i = 0 ; i > -_renderDistance && !_exit_threads;i--)
         {
             for(int j = 0; j < _renderDistance;j++)
                 GenerateChunk(new Vector2I(i,j));
@@ -86,17 +86,18 @@ public partial class VoxelWorld:Node
 
     private void _GenerateChunkData()
     {
+
         ulong start = Time.GetTicksMsec();
         for(int i = -_renderDistance; i < _renderDistance; i++)
         {
             for(int j = -_renderDistance;  j < _renderDistance; j++)
             {   
-                Vector2I chunkPosition = new Vector2I(i,j);
+                Vector2I chunkPosition = new Vector2I(i ,j);
                 ChunkResource chunkResource = ChunkLoader.GetChunkResourceOrNull(chunkPosition);
                 if(chunkResource == null)
                 {
                     byte[, ,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
-                    chunkResource = new ChunkResource(chunkData, new Vector2I(i,j));
+                    chunkResource = new ChunkResource(chunkData, chunkPosition);
                 }
                 _chunksResources.Add(chunkPosition, chunkResource);
                 
@@ -115,8 +116,6 @@ public partial class VoxelWorld:Node
         chunkBody.MeshInstance.Mesh = ChunksMeshGenerator.GenerateChunkMesh(chunk, this);       
         chunkBody.MeshInstance.MaterialOverride = _materialOverride;
         CallDeferred("add_child", chunkBody);
-        
-        //chunkBody.MeshInstance.CallDeferred("create_trimesh_collision");
     }
 
     //Summary:
@@ -124,7 +123,7 @@ public partial class VoxelWorld:Node
     //  If chunk is not chunk it get you Block.Type.CobbleStone. This is for render chunk mesh and collision.
     public ChunkResource.Types GetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition)
     {
-        Vector2I chunkPosition = _GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
+        Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
         ChunkResource chunkResource;
         if(_chunksResources.TryGetValue(chunkPosition, out chunkResource))
         {   
@@ -135,12 +134,12 @@ public partial class VoxelWorld:Node
     }
     public void SetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition, ChunkResource.Types blockType)
     {
-        Vector2I chunkPosition = _GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
+        Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
         ChunkResource chunkResource = _chunksResources[chunkPosition];
         Vector3I subPosition = blockGlobalPosition % ChunkDataGenerator.CHUNK_SIZE;
         chunkResource.Data[subPosition.X,subPosition.Y,subPosition.Z] = blockType;
     }
-    private Vector2I _GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
+    public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
     {
         Vector2I chunkPosition = new Vector2I(blockGlobalPosition.X / ChunkDataGenerator.CHUNK_SIZE,blockGlobalPosition.Z /ChunkDataGenerator.CHUNK_SIZE);
         if(blockGlobalPosition.X < 0 && blockGlobalPosition.X % ChunkDataGenerator.CHUNK_SIZE != 0)

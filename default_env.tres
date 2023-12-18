@@ -1,16 +1,7 @@
-[gd_resource type="Environment" load_steps=3 format=3 uid="uid://do3ou4g33b3sb"]
+[gd_resource type="Environment" load_steps=2 format=3 uid="uid://dhoxtrqj7y7av"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_rhfg5"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-
-[sub_resource type="Sky" id="Sky_iri27"]
-sky_material = SubResource("ProceduralSkyMaterial_rhfg5")
+[sub_resource type="Sky" id="1"]
 
 [resource]
 background_mode = 2
-sky = SubResource("Sky_iri27")
-tonemap_mode = 2
-glow_enabled = true
-fog_enabled = true
-fog_aerial_perspective = 0.5
+sky = SubResource("1")
