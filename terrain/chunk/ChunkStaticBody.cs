@@ -1,7 +1,7 @@
 using Godot;
 
 [GlobalClass]
-public partial class ChunkStaticBody : StaticBody3D
+public partial class ChunkStaticBody : Node3D
 {
     [Export]public MeshInstance3D MeshInstance;
     [Export]public CollisionShape3D ColisionShape;
@@ -16,7 +16,5 @@ public partial class ChunkStaticBody : StaticBody3D
     {
         AddChild(ColisionShape);
         AddChild(MeshInstance);
-        ulong start = Time.GetTicksMsec();
-        GD.Print(Time.GetTicksMsec() - start);
     }
 }

@@ -1,22 +1,22 @@
-[gd_scene load_steps=8 format=3 uid="uid://1s4asqpay67m"]
+[gd_scene load_steps=6 format=3 uid="uid://1s4asqpay67m"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b4tnsxv70xmon" path="res://textures/texture_sheet.png" id="2"]
-[ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="3_8ei63"]
-[ext_resource type="ArrayMesh" uid="uid://da7e7i55w6te8" path="res://mesh.res" id="4_spifg"]
 
 [sub_resource type="CylinderShape3D" id="1"]
 height = 1.75
 radius = 0.375
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jyixh"]
+auto_exposure_enabled = true
+auto_exposure_scale = 0.2
+auto_exposure_speed = 0.3
 
 [sub_resource type="AtlasTexture" id="2"]
 atlas = ExtResource("2")
 region = Rect2(0, 0, 64, 64)
 
 [node name="Player" type="CharacterBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.3494, 152.417, 14.0484)
 collision_layer = 0
 script = ExtResource("1")
 
@@ -51,12 +51,3 @@ grow_horizontal = 0
 grow_vertical = 0
 texture = SubResource("2")
 expand_mode = 1
-
-[node name="VoxelWorld" type="Node" parent="."]
-script = ExtResource("3_8ei63")
-
-[node name="Mesh" type="MeshInstance3D" parent="VoxelWorld"]
-mesh = ExtResource("4_spifg")
-skeleton = NodePath("../..")
-
-[connection signal="child_entered_tree" from="VoxelWorld" to="." method="_on_voxel_world_child_entered_tree"]

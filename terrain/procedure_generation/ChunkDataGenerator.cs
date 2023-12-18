@@ -40,13 +40,22 @@ namespace ProcedureGeneration
             {
                 for (int j = 0; j < CHUNK_SIZE; ++j)
                 {
-                    float noise_pos = _noise.GetNoise2D(i + chunkPosition.X, j + chunkPosition.Y);
-                    heights[i, j] = (byte)Math.Round(Mathf.Remap(noise_pos, -1, 1, 0, 255));
+                    heights[i, j] = GetBlockHeightGeneratedFromGlobalPosition(i + chunkPosition.X * CHUNK_SIZE, j + chunkPosition.Y * CHUNK_SIZE);
                 }
             }
             return heights;
         }
+        public static byte GetBlockHeightGeneratedFromGlobalPosition(Vector3I blockPosition)
+        {
+            float noise_pos = _noise.GetNoise2D(blockPosition.X, blockPosition.Z);
+            return (byte)Math.Round(Mathf.Remap(noise_pos, -1, 1, 0, 255));
+        }
 
+        public static byte GetBlockHeightGeneratedFromGlobalPosition(int x, int z)
+        {
+            float noise_pos = _noise.GetNoise2D(x, z);
+            return (byte)Math.Round(Mathf.Remap(noise_pos, -1, 1, 0, 255));
+        }
         public static byte[,,] GetChunkWithTerrain(Vector2I chunkPosition, byte[,] chunk_heights)
         {
             byte[,,] chunk = new byte[CHUNK_SIZE, CHUNK_HEIGHT, CHUNK_SIZE];
@@ -56,7 +65,10 @@ namespace ProcedureGeneration
                 {
                     for (int y = 0; y < chunk_heights[x, z]; ++y)
                     {
-                        chunk[x, y, z] = (byte)ChunkResource.Types.CobbleStone;
+                        if(GD.Randf() < 0.5)
+                            chunk[x, y, z] = (byte)ChunkResource.Types.CobbleStone;
+                        else
+                            chunk[x, y, z] = (byte)ChunkResource.Types.Dirt;
                     }
                 }
             }

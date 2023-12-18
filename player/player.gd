@@ -35,12 +35,22 @@ func _process(_delta):
 	# Block selection.
 	var ray_position = raycast.get_collision_point()
 	var ray_normal = raycast.get_collision_normal()
-
+	
+	if not is_on_floor():
+		velocity.y -= gravity * _delta
+	
+	if is_on_floor() and Input.is_action_pressed("ui_accept"):
+		velocity.y = 5;
+	
+	var movement_vec2 := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	var movement = transform.basis * (Vector3(movement_vec2.x, 0, movement_vec2.y))
+	
+	velocity.x = movement.x * 5
+	velocity.z = movement.z * 5
+	move_and_slide()
+	
 func _input(event):
 	if event is InputEventMouseMotion:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			_mouse_motion += event.relative
 
-
-func _on_voxel_world_child_entered_tree(node:ChunkStaticBody):
-	ResourceSaver.save( node.MeshInstance.mesh, "res://mesh.res")

@@ -28,16 +28,17 @@ namespace ChunkBodyGeneration
             {
                 throw new Exception("No elements in array ChunksMeshGenerator.cs 21");
             }
-            SurfaceTool surfaceTool = new SurfaceTool();
+            
+            SurfaceTool surfaceTool = new();
             surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
             
-            ulong start =Time.GetTicksUsec();
             _GenerateInsideChunkSurfaceTool(surfaceTool, mainDataChunk);
-
-            _GenerateUpDownYSurfaceTool(surfaceTool, mainDataChunk);
+            
+            _GenerateUpDownYSurfaceTool(surfaceTool, mainDataChunk, world, chunkResource);
 
             _GenerateChunkSidesSurfaceTool(surfaceTool, chunkResource, world);
-            GD.Print(Time.GetTicksUsec() - start);
+            
+            
             surfaceTool.GenerateNormals();
             surfaceTool.GenerateTangents();
             surfaceTool.Index();
@@ -90,8 +91,9 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateUpDownYSurfaceTool(SurfaceTool surfaceTool, ChunkResource.Types[,,] mainDataChunk)
+        private static void _GenerateUpDownYSurfaceTool(SurfaceTool surfaceTool, ChunkResource.Types[,,] mainDataChunk, VoxelWorld voxelWorld, ChunkResource chunk)
         {
+            Vector3I chunkPosition = new(chunk.Position.X, 0, chunk.Position.Y);
             bool []neighbourBlocksAreTransparent = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
             for (int y = 0; y < ChunkDataGenerator.CHUNK_HEIGHT; y += ChunkDataGenerator.CHUNK_HEIGHT - 1)
             {
@@ -113,7 +115,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z + 1]);
                         neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x - 1, y, z]);
                         neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x + 1, y, z]);
-                        neighbourBlocksAreTransparent[y != 0?4:5] =ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x + 1, y + blockYSideCheck, z]);
+                        neighbourBlocksAreTransparent[y != 0?4:5] =ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y + blockYSideCheck, z]);
 
                         foreach (bool item in neighbourBlocksAreTransparent)
                         {
@@ -131,6 +133,126 @@ namespace ChunkBodyGeneration
 
                     }
                 }
+
+                
+                for(int x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x+= ChunkDataGenerator.CHUNK_SIZE - 1)
+                {
+                    
+                    for(int z = 1; z < ChunkDataGenerator.CHUNK_SIZE -1; ++z)
+                    {
+                        ChunkResource.Types blockId = mainDataChunk[x, y, z];
+                        if (blockId == ChunkResource.Types.Air)
+                        {
+                            continue;
+                        }
+                        int counter = 0;
+                        neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z - 1]);
+                        neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z + 1]);
+
+                        if(x == 0)
+                        {
+                            neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x - 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x + 1, y, z]);
+                        }
+                        else
+                        {
+                            neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x - 1, y, z]);
+                            neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x + 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        }
+
+
+                        neighbourBlocksAreTransparent[y != 0?4:5] =ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y + blockYSideCheck, z]);
+
+                        foreach (bool item in neighbourBlocksAreTransparent)
+                        {
+                            if(item)
+                            {
+                                ++counter;
+                            }
+                        }
+                        if(counter == 0)
+                        {
+                            continue;
+                        }
+                        
+                        _DrawBlockMesh(surfaceTool, new Vector3I(x, y, z), blockId, neighbourBlocksAreTransparent);
+                    }
+                }
+                for(int z = 0; z < ChunkDataGenerator.CHUNK_SIZE; z+= ChunkDataGenerator.CHUNK_SIZE - 1)
+                {
+                    for(int x = 1; x < ChunkDataGenerator.CHUNK_SIZE -1; ++x)
+                    {
+                        ChunkResource.Types blockId = mainDataChunk[x, y, z];
+                        if (blockId == ChunkResource.Types.Air)
+                        {
+                            continue;
+                        }
+                        int counter = 0;
+                        if(z == 0)
+                        {
+                            neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z + 1]);
+                        }
+                        else
+                        {
+                            neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z - 1]);
+                            neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        }
+                        neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x - 1, y, z]);
+                        neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x + 1, y, z]);
+                        neighbourBlocksAreTransparent[y != 0?4:5] =ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y + blockYSideCheck, z]);
+
+                        foreach (bool item in neighbourBlocksAreTransparent)
+                        {
+                            if(item)
+                            {
+                                ++counter;
+                            }
+                        }
+                        if(counter == 0)
+                        {
+                            continue;
+                        }
+                        
+                        _DrawBlockMesh(surfaceTool, new Vector3I(x, y, z), blockId, neighbourBlocksAreTransparent);
+                    }
+                }
+                for(int x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x+=ChunkDataGenerator.CHUNK_SIZE-1)
+                {
+                    for(int z = 0; z < ChunkDataGenerator.CHUNK_SIZE; z+= ChunkDataGenerator.CHUNK_SIZE-1)
+                    {
+                        ChunkResource.Types  blockId = mainDataChunk[x,y,z];
+                        if(blockId == 0)
+                        {
+                            continue;
+                        }
+                        int counter = 0;
+                        neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z + 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x - 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x + 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        
+                        neighbourBlocksAreTransparent[y != 0?4:5] =ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y + blockYSideCheck, z]);
+
+                        foreach (bool item in neighbourBlocksAreTransparent)
+                        {
+                            if(item)
+                            {
+                                ++counter;
+                            }
+                        }
+                        if(counter == 0)
+                        {
+                            continue;
+                        }
+                        
+                        _DrawBlockMesh(surfaceTool, new Vector3I(x, y, z), blockId, neighbourBlocksAreTransparent);
+                    }
+                }
             }
         }
 
@@ -138,7 +260,7 @@ namespace ChunkBodyGeneration
         {
             bool []neighbourBlocksAreTransparent = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
             ChunkResource.Types[,,] mainDataChunk = chunk.Data;
-            Vector3I chunkPosition = new Vector3I(chunk.Position.X, 0, chunk.Position.Y);
+            Vector3I chunkPosition = new(chunk.Position.X, 0, chunk.Position.Y);
             for (int i = 0; i < ChunkDataGenerator.CHUNK_SIZE; i += ChunkDataGenerator.CHUNK_SIZE - 1)
             {
                 for (int x = 1; x < ChunkDataGenerator.CHUNK_SIZE - 1; x++)
@@ -184,8 +306,6 @@ namespace ChunkBodyGeneration
                         }
                         _DrawBlockMesh(surfaceTool, new Vector3I(x, y, i), blockId, neighbourBlocksAreTransparent);
                         
-
-
                         
                     }
                 }
@@ -234,13 +354,70 @@ namespace ChunkBodyGeneration
                     }
                 }
             }
+
+            for(int x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x+= ChunkDataGenerator.CHUNK_SIZE - 1)
+            {
+                for(int y = 1 ; y < ChunkDataGenerator.CHUNK_HEIGHT - 1; ++y)
+                {
+                    for(int z = 0; z < ChunkDataGenerator.CHUNK_SIZE; ++z)
+                    {
+                        ChunkResource.Types blockId = mainDataChunk[x, y, z];
+                        if (blockId == ChunkResource.Types.Air)
+                        {
+                            continue;
+                        }
+                        int counter = 0;
+                        if(x == 0)
+                        {
+                            neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x - 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x + 1, y, z]);
+                        }
+                        else
+                        {
+                            neighbourBlocksAreTransparent[2] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x - 1, y, z]);
+                            neighbourBlocksAreTransparent[3] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x + 1, y, z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        }
+                        if(z == 0)
+                        {
+                            neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z + 1]);
+                            neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        }
+                        else
+                        {
+                            neighbourBlocksAreTransparent[0] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y, z - 1]);
+                            neighbourBlocksAreTransparent[1] = ChunksBodyGenerator.IsBlockTransparent(
+                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I(x, y, z + 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        }
+                        neighbourBlocksAreTransparent[4] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y - 1, z]);
+                        neighbourBlocksAreTransparent[5] = ChunksBodyGenerator.IsBlockTransparent(mainDataChunk[x, y + 1, z]);
+
+                        
+                        foreach (bool item in neighbourBlocksAreTransparent)
+                        {
+                            if(item)
+                            {
+                                ++counter;
+                            }
+                        }
+                        if(counter == 0)
+                        {
+                            continue;
+                        }
+                        _DrawBlockMesh(surfaceTool, new Vector3I(x, y, z), blockId, neighbourBlocksAreTransparent);
+                    }
+                }
+            }
+
         }
         private static void _DrawBlockMesh(SurfaceTool surfaceTool, Vector3I blockSubPosition, ChunkResource.Types blockId, bool[] sidesToDraw)
         {
             Vector3[] verts = ChunksBodyGenerator.CalculateBlockVerts(blockSubPosition);
             Vector2[] uvs = ChunksBodyGenerator.CalculateBlockUvs((int)blockId);
-            Vector2[] top_uvs = (Vector2[])uvs.Clone();
-            Vector2[] bottom_uvs = (Vector2[])uvs.Clone();
+            Vector2[] top_uvs = uvs;
+            Vector2[] bottom_uvs = uvs;
 
             
 
@@ -259,42 +436,15 @@ namespace ChunkBodyGeneration
             // }
             if (blockId == ChunkResource.Types.Grass)
             {
-                top_uvs = ChunksBodyGenerator.CalculateBlockUvs(0);
-                bottom_uvs = ChunksBodyGenerator.CalculateBlockUvs(2);
+                top_uvs = (Vector2[])ChunksBodyGenerator.CalculateBlockUvs(0).Clone();
+                bottom_uvs = (Vector2[])ChunksBodyGenerator.CalculateBlockUvs(2).Clone();
             }
             else if (blockId == ChunkResource.Types.Furnace)
             {
-                top_uvs = ChunksBodyGenerator.CalculateBlockUvs(31);
+                top_uvs = (Vector2[])ChunksBodyGenerator.CalculateBlockUvs(31).Clone();
                 bottom_uvs = top_uvs;
             }
-            // switch (sideToDraw)
-            //     {
-            //         case Side.Left:
-            //             Vector3[] verts1_ = { verts[2], verts[0], verts[3], verts[1] };
-            //             _DrawBlockFace(surfaceTool, verts1_, uvs);
-            //             break;
-            //         case Side.Right:
-            //             Vector3[] verts2_ = { verts[7], verts[5], verts[6], verts[4] };
-            //             _DrawBlockFace(surfaceTool, verts2_, uvs);
-            //             break;
-            //         case Side.Forw ard: 
-            //             Vector3[] verts3_ = { verts[6], verts[4], verts[2], verts[0] };
-            //             _DrawBlockFace(surfaceTool, verts3_, uvs);
-            //             break;
-            //         case Side.Bac k:
-            //             Vector3[] verts4_ = { verts[3], verts[1], verts[7], verts[5] };
-            //             _DrawBlockFace(surfaceTool, verts4_, uvs);
-            //             break;
-            //         case Side.Up:
-            //             Vector3[] verts5_ = { verts[2], verts[3], verts[6], verts[7] };
-            //             _DrawBlockFace(surfaceTool, verts5_, top_uvs);
-            //             break;
-            //         case Side.Down:
-            //             Vector3[] verts6_ = { verts[4], verts[5], verts[0], verts[1] };
-            //             _DrawBlockFace(surfaceTool, verts6_, bottom_uvs);
-            //             break;
-            //     }
-            // 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
+
             if(sidesToDraw[2])
             {
                 Vector3[] verts1_ = { verts[2], verts[0], verts[3], verts[1] };

@@ -67,6 +67,7 @@ func _input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				_start_picking(event.position)
+				get_node("../VoxelWorld").queue_free()
 			else:
 				_stop_picking()
 		if event.button_index == MOUSE_BUTTON_RIGHT:
@@ -178,3 +179,6 @@ func _rotate_from_mouse(relative: Vector2) -> void:
 		wrapf(rotation.y + delta.x, 0.0, TAU),
 		rotation.z
 	)
+
+
+

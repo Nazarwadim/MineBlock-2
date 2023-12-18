@@ -2,6 +2,9 @@ using Godot;
 using Godot.Collections;
 using ChunkBodyGeneration;
 using ProcedureGeneration;
+using System.Threading;
+using System;
+using ChunksSerealisation;
 
 [GlobalClass]
 public partial class VoxelWorld:Node
@@ -14,26 +17,107 @@ public partial class VoxelWorld:Node
     [Export] ulong Seed;
     private Dictionary<Vector2I, ChunkResource> _chunksResources;
     private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
-
+    private Material _materialOverride = GD.Load<Material>("res://textures/material.tres");
+    private Thread[] _thread  = new Thread[4];
     public override void _Ready()
     {
-        
         ChunkDataGenerator.Seed = Seed;
-        var chunkPosition = new Vector2I(0,0);
-        byte[,] chunkHeights = ChunkDataGenerator.GetChunkHeightsFromNoise(chunkPosition);
-        byte[, ,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
         
-        var chunk = new ChunkResource(chunkData, chunkPosition, chunkHeights);
+
+        _GenerateChunkData();
+
+
         
-        _chunksResources.Add(chunkPosition, chunk);
-        ChunkStaticBody chunkBody = new ChunkStaticBody();
-        chunkBody.MeshInstance.Mesh = ChunksMeshGenerator.GenerateChunkMesh(chunk, this);
-        chunkBody.MeshInstance.MaterialOverride = GD.Load<Material>("res://textures/material.tres");
-        //AddChild(chunkBody);
+        _thread[0] = new Thread(_GenerateChunksByThreadBackRight);
+        _thread[1] = new Thread(_GenerateChunksByThreadBackLeft);
+        _thread[2] = new Thread(_GenerateChunksByThreadForwardRight);
+        _thread[3] = new Thread(_GenerateChunksByThreadForwardLeft);
+        foreach (Thread thread in _thread)
+        {
+            thread.Start();
+        }
         
     }
 
+    public override void _ExitTree()
+    {
+        ChunkSaver.SaveStaticTerrain(_chunksResources);
+        foreach (var thread in _thread)
+        {
+            thread.Join();
+        }
+    }
 
+    private int _renderDistance = 50;
+    private void _GenerateChunksByThreadForwardRight()
+    {
+        for(int i = 0; i < _renderDistance;i++)
+        {
+            for(int j =0; j > -_renderDistance; --j)
+                GenerateChunk(new Vector2I(i,j));
+        }
+    }
+    private void _GenerateChunksByThreadForwardLeft()
+    {
+        for(int i = 0; i > -_renderDistance;i--)
+        {
+            for(int j = 0; j > -_renderDistance; --j)
+                GenerateChunk(new Vector2I(i,j));
+        }
+    }
+    private void _GenerateChunksByThreadBackRight()
+    {
+        for(int i = 0; i < _renderDistance;i++)
+        {
+            for(int j = 0; j < _renderDistance;j++)
+                GenerateChunk(new Vector2I(i,j));
+        }
+    }
+    private void _GenerateChunksByThreadBackLeft()
+    {
+        for(int i = 0 ; i > -_renderDistance;i--)
+        {
+            for(int j = 0; j < _renderDistance;j++)
+                GenerateChunk(new Vector2I(i,j));
+        }
+    }
+
+
+
+    private void _GenerateChunkData()
+    {
+        ulong start = Time.GetTicksMsec();
+        for(int i = -_renderDistance; i < _renderDistance; i++)
+        {
+            for(int j = -_renderDistance;  j < _renderDistance; j++)
+            {   
+                Vector2I chunkPosition = new Vector2I(i,j);
+                ChunkResource chunkResource = ChunkLoader.GetChunkResourceOrNull(chunkPosition);
+                if(chunkResource == null)
+                {
+                    byte[, ,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
+                    chunkResource = new ChunkResource(chunkData, new Vector2I(i,j));
+                }
+                _chunksResources.Add(chunkPosition, chunkResource);
+                
+            }
+        }
+        GD.Print(Time.GetTicksMsec() - start);
+    }
+    private Vector2I chunkPosition;
+    public void GenerateChunk(Vector2I chunkPosition)
+    {   
+        ChunkResource chunk = _chunksResources[chunkPosition];
+        ChunkStaticBody chunkBody = new()
+        {
+            Position = new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)
+        };
+        chunkBody.MeshInstance.Mesh = ChunksMeshGenerator.GenerateChunkMesh(chunk, this);       
+        chunkBody.MeshInstance.MaterialOverride = _materialOverride;
+        CallDeferred("add_child", chunkBody);
+        
+        //chunkBody.MeshInstance.CallDeferred("create_trimesh_collision");
+    }
 
     //Summary:
     //  This get you block type (Block.Type enum) from block global position.
@@ -59,14 +143,15 @@ public partial class VoxelWorld:Node
     private Vector2I _GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
     {
         Vector2I chunkPosition = new Vector2I(blockGlobalPosition.X / ChunkDataGenerator.CHUNK_SIZE,blockGlobalPosition.Z /ChunkDataGenerator.CHUNK_SIZE);
-        if(blockGlobalPosition.X < 0)
+        if(blockGlobalPosition.X < 0 && blockGlobalPosition.X % ChunkDataGenerator.CHUNK_SIZE != 0)
         {
             --chunkPosition.X;
         }
-        if(blockGlobalPosition.Z < 0)
+        if(blockGlobalPosition.Z < 0 && blockGlobalPosition.Z % ChunkDataGenerator.CHUNK_SIZE != 0)
         {
             --chunkPosition.Y;
         }
         return chunkPosition;
     }
+    
 }
