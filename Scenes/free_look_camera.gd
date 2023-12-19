@@ -38,14 +38,12 @@ const SAVE_PATH = "user://PlayerTransform.bin"
 
 signal position_XZ_changed(position:Vector2i)
 
-var position_before:Vector2i
+@onready var position_before:Vector2i = Vector2i(position.x,  position.z)
 func _enter_tree() -> void:
-	#if(FileAccess.file_exists(SAVE_PATH)):
-		#transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
-	pass
 	
-	
-	
+	if(FileAccess.file_exists(SAVE_PATH)):
+		transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
+func _ready():	
 	pick_anchor = AnimatableBody3D.new()
 	pick_anchor.collision_layer = 0
 	pick_anchor.collision_mask = 0
@@ -65,6 +63,7 @@ func _enter_tree() -> void:
 	pick_joint["linear_limit_spring_z/damping"] = pick_damping
 	pick_joint["solver_velocity_iterations"] = pick_iterations
 	pick_joint["solver_position_iterations"] = pick_iterations
+	position_XZ_changed.emit(Vector2i(position.x, position.z));
 
 func _exit_tree() -> void:
 	pick_joint.queue_free()

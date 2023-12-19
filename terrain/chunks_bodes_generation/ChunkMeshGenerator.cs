@@ -450,7 +450,7 @@ namespace ChunkBodyGeneration
             }
             switch(blockId)
             {
-                case ChunkDataGenerator.BlockTypes.Grass:
+                case ChunkDataGenerator.BlockTypes.GrassBlock:
                     top_uvs = (Vector2[])CalculateBlockUvs(0).Clone();
                     bottom_uvs = (Vector2[])CalculateBlockUvs(2).Clone();
                     break;

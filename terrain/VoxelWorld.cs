@@ -2,6 +2,7 @@ using Godot;
 using Godot.Collections;
 using ChunkBodyGeneration;
 using ProcedureGeneration;
+using System;
 
 [GlobalClass]
 public partial class VoxelWorld : Node
@@ -13,17 +14,18 @@ public partial class VoxelWorld : Node
         _chunksResources = new Dictionary<Vector2I, ChunkResource>();
         _chunksBodies = new Dictionary<Vector2I, ChunkStaticBody>();
         _middleChunkPos = new Vector2I();
-        _mut = new();
     }
     [Export] ulong Seed;
-    private Dictionary<Vector2I, ChunkResource> _chunksResources;
+    
     [Export] public int RenderDistance = 3;
+    [Export] public float FogDensity;
     [Export] private WorldEnvironment _worldEnvironment;
+    
+    private Dictionary<Vector2I, ChunkResource> _chunksResources;
     private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
     private Material _materialOverride = GD.Load<Material>("res://textures/material.tres");
     private ChunkUpdater _chunkUpdater;
     private Vector2I _middleChunkPos;
-    private System.Threading.Mutex _mut;
     public override void _Ready()
     {
         if(_worldEnvironment == null)
@@ -31,12 +33,23 @@ public partial class VoxelWorld : Node
             GD.PrintErr("Set world environment!!!! VoxelWorld.cs line 33");
             GetTree().Quit();
         }
+        
         ChunkDataGenerator.Seed = Seed;
-        _chunkUpdater = new ChunkUpdater(_chunksResources, _chunksBodies, this, _mut);
+        _chunkUpdater = new ChunkUpdater(_chunksResources, _chunksBodies, this);
+        _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         AddChild(_chunkUpdater);
+        
         
     }
 
+    private void _OnCurrentRenderDistanceChanged(int distance)
+    {
+        if(distance > 0)
+        {
+            _worldEnvironment.Environment.VolumetricFogDensity = 1f/(distance * distance);
+            _worldEnvironment.Environment.VolumetricFogLength =  ChunkDataGenerator.CHUNK_SIZE * distance;
+        }   
+    }
     private void _OnPlayerPositioXYChanged(Vector2I position)
     {
         Vector2I chunkPos = GetChunkGlobalPositionFromBlockGlobalPosition(position);
@@ -44,9 +57,9 @@ public partial class VoxelWorld : Node
         {
             _middleChunkPos = chunkPos;
             EmitSignal(SignalName.MiddleChunkPositionChanged, _middleChunkPos);
+
         }
     }
-
 
 
     public ChunkStaticBody GenerateChunkBody(Vector2I chunkPosition)
@@ -58,9 +71,7 @@ public partial class VoxelWorld : Node
             new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)
         );
         chunkBody.MeshInstance.MaterialOverride = _materialOverride;
-        _mut.WaitOne();
-        _chunksBodies.Add(chunkPosition, chunkBody);
-        _mut.ReleaseMutex();
+        
         return chunkBody;
     }
 
