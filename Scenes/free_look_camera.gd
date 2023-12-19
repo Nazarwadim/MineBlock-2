@@ -33,11 +33,19 @@ var pick_anchor: AnimatableBody3D
 var pick_joint: JoltGeneric6DOFJoint3D
 
 @onready var target_position := position
+const SAVE_PATH = "user://PlayerTransform.bin"
+
 
 signal position_XZ_changed(position:Vector2i)
 
 var position_before:Vector2i
 func _enter_tree() -> void:
+	#if(FileAccess.file_exists(SAVE_PATH)):
+		#transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
+	pass
+	
+	
+	
 	pick_anchor = AnimatableBody3D.new()
 	pick_anchor.collision_layer = 0
 	pick_anchor.collision_mask = 0
@@ -61,6 +69,9 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	pick_joint.queue_free()
 	pick_anchor.queue_free()
+	save()
+	
+
 
 func _input(event: InputEvent) -> void:
 	if not current:
@@ -70,7 +81,6 @@ func _input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
 				_start_picking(event.position)
-				get_node("../VoxelWorld").queue_free()
 			else:
 				_stop_picking()
 		if event.button_index == MOUSE_BUTTON_RIGHT:
@@ -115,7 +125,8 @@ func _physics_process(_delta: float) -> void:
 	if(Vector2i(position.x, position.z) != position_before):
 		position_before = Vector2i(position.x, position.z)
 		position_XZ_changed.emit(position_before)
-	
+		if randf() < 0.05:
+			save()
 	
 	
 func _start_picking(mouse_position: Vector2) -> void:
@@ -188,5 +199,9 @@ func _rotate_from_mouse(relative: Vector2) -> void:
 		rotation.z
 	)
 
+func save():
+	var transform_bynary = var_to_bytes(transform)
+	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	file.store_buffer(transform_bynary)
 
 

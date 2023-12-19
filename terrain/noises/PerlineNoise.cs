@@ -1,7 +1,8 @@
 using Godot;
-
+using ProcedureGeneration;
 public partial class PerlineNoise : FastNoiseLite
 {
+
     public PerlineNoise(int seed)
     {
         Seed = seed;
@@ -9,5 +10,9 @@ public partial class PerlineNoise : FastNoiseLite
         FractalOctaves = 6;
         FractalGain = 0.7f;
         FractalLacunarity = 1.35f;
+    }
+    public void SetBiome(ChunkDataGenerator.Biomes biome)
+    {   
+        
     }
 }

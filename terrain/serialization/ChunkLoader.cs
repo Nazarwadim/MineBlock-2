@@ -6,13 +6,9 @@ namespace ChunksSerealisation
     {
         public const string LOAD_PATH = "user://world/";
 
-        public static bool IsChunkSavedAtPosition(Vector2I chunkPosition)
-        {
-            return FileAccess.FileExists(LOAD_PATH + GD.VarToStr(chunkPosition) + ".res");
-        }
         public static ChunkResource GetChunkResourceOrNull(Vector2I chunkPosition)
         {
-            if(IsChunkSavedAtPosition(chunkPosition))
+            if(FileAccess.FileExists(LOAD_PATH + GD.VarToStr(chunkPosition) + ".res"))
             {
                 return ChunkResource.Load(chunkPosition);
             }
