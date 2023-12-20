@@ -72,6 +72,8 @@ public partial class VoxelWorld : Node
 
 
 
+    
+
     //Summary:
     //  This get you block type (Block.Type enum) from block global position.
     //  If chunk is not chunk it get you Block.Type.CobbleStone. This is for render chunk mesh and collision.
@@ -115,6 +117,35 @@ public partial class VoxelWorld : Node
             --chunkPosition.X;
         }
         if (blockGlobalPosition.Y < 0 && blockGlobalPosition.Y % ChunkDataGenerator.CHUNK_SIZE != 0)
+        {
+            --chunkPosition.Y;
+        }
+        return chunkPosition;
+    }
+
+
+
+    //Fast code bad readable!
+    public ChunkDataGenerator.BlockTypes GetBlockTypeInGlobalPosition(long x, long y,long z)
+    {
+        Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(x,z);
+        ChunkResource chunkResource;
+        if (_chunksResources.TryGetValue(chunkPosition, out chunkResource))
+        {
+            return chunkResource.Data[x - chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, y, z - chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE];
+        }
+        return ChunkDataGenerator.BlockTypes.CobbleStone;
+    }
+
+
+    public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(long x, long z)
+    {
+        Vector2I chunkPosition = new((int)x / ChunkDataGenerator.CHUNK_SIZE, (int)z / ChunkDataGenerator.CHUNK_SIZE);
+        if (x < 0 && x % ChunkDataGenerator.CHUNK_SIZE != 0)
+        {
+            --chunkPosition.X;
+        }
+        if (z < 0 && z % ChunkDataGenerator.CHUNK_SIZE != 0)
         {
             --chunkPosition.Y;
         }

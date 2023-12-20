@@ -34,7 +34,7 @@ frustum_focal_length = 13.07
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 5
+RenderDistance = 50
 _worldEnvironment = NodePath("../WorldEnvironment")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
