@@ -10,6 +10,7 @@ public partial class PerlineNoise : FastNoiseLite
     public PerlineNoise(int seed)
     {
         NoiseType = NoiseTypeEnum.Perlin;
+        FractalType = FractalTypeEnum.Fbm;
         Seed = seed;
         Frequency = 0.005f;
         FractalOctaves = 6;

@@ -33,7 +33,9 @@ public partial class ChunkResource : Resource
     {
         _data = new byte[ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE];
         Buffer.BlockCopy(Data, 0, _data, 0, _data.Length);
-        return ResourceSaver.Save(this, ChunkSaver.SAVE_PATH + GD.VarToStr(Position) + ".res", ResourceSaver.SaverFlags.Compress);
+        Error error = ResourceSaver.Save(this, ChunkSaver.SAVE_PATH + GD.VarToStr(Position) + ".res", ResourceSaver.SaverFlags.Compress);
+        _data = null;
+        return error;
     }
 
 
@@ -44,6 +46,7 @@ public partial class ChunkResource : Resource
             ChunkResource chunk = (ChunkResource)ResourceLoader.Load(ChunkSaver.SAVE_PATH + GD.VarToStr(position) + ".res");
             chunk.Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
             Buffer.BlockCopy(chunk._data, 0, chunk.Data, 0, chunk._data.Length);
+            chunk._data = null;
             return chunk;
         }
         catch (NullReferenceException)
