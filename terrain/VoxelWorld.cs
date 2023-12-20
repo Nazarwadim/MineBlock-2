@@ -17,7 +17,7 @@ public partial class VoxelWorld : Node
     }
     [Export] ulong Seed;
     
-    [Export] public int RenderDistance = 3;
+    [Export] public int RenderDistance = 10;
     [Export] public float FogDensity;
     [Export] private WorldEnvironment _worldEnvironment;
     
@@ -36,20 +36,11 @@ public partial class VoxelWorld : Node
         
         ChunkDataGenerator.Seed = Seed;
         _chunkUpdater = new ChunkUpdater(_chunksResources, _chunksBodies, this);
-        _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         AddChild(_chunkUpdater);
-        
         
     }
 
-    private void _OnCurrentRenderDistanceChanged(int distance)
-    {
-        if(distance > 0)
-        {
-            _worldEnvironment.Environment.VolumetricFogDensity = 1f/(distance * distance);
-            _worldEnvironment.Environment.VolumetricFogLength =  ChunkDataGenerator.CHUNK_SIZE * distance;
-        }   
-    }
+    
     private void _OnPlayerPositioXYChanged(Vector2I position)
     {
         Vector2I chunkPos = GetChunkGlobalPositionFromBlockGlobalPosition(position);
@@ -57,7 +48,11 @@ public partial class VoxelWorld : Node
         {
             _middleChunkPos = chunkPos;
             EmitSignal(SignalName.MiddleChunkPositionChanged, _middleChunkPos);
-
+        }
+        else if(_middleChunkPos == Vector2I.Zero)
+        {
+            _middleChunkPos = chunkPos;
+            EmitSignal(SignalName.MiddleChunkPositionChanged, _middleChunkPos);
         }
     }
 

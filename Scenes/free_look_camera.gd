@@ -43,6 +43,7 @@ func _enter_tree() -> void:
 	
 	if(FileAccess.file_exists(SAVE_PATH)):
 		transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
+		
 func _ready():	
 	pick_anchor = AnimatableBody3D.new()
 	pick_anchor.collision_layer = 0

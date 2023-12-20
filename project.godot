@@ -27,6 +27,11 @@ settings/stdout/print_fps=true
 
 project/assembly_name="Voxel Game 2.0"
 
+[editor]
+
+movie_writer/mjpeg_quality=0.85
+movie_writer/movie_file="/home/klever2282/GodotProgects/ChunkUpdate1.avi"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/finite_state_machine/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/inventory-system/plugin.cfg")

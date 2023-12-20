@@ -1,10 +1,15 @@
 using Godot;
-using ProcedureGeneration;
+
+
+
+namespace ProcedureGeneration
+{
 public partial class PerlineNoise : FastNoiseLite
 {
 
     public PerlineNoise(int seed)
     {
+        NoiseType = NoiseTypeEnum.Perlin;
         Seed = seed;
         Frequency = 0.005f;
         FractalOctaves = 6;
@@ -22,11 +27,12 @@ public partial class PerlineNoise : FastNoiseLite
                 FractalLacunarity = 1.35f;
                 break;
             case ChunkDataGenerator.Biomes.Mountains:
-                Frequency = 0.005f;
+                Frequency = 0.004f;
                 FractalOctaves = 4;
-                FractalGain = 0.6f;
-                FractalLacunarity = 2.2f;
+                FractalGain = 0.5f;
+                FractalLacunarity = 2.7f;
                 break;
         }
     }
+}
 }

@@ -138,14 +138,27 @@ namespace ProcedureGeneration
                         y < Mathf.Remap(random.Randf(), 0, 1, 130, 255) && random.Randf() < 0.08f)
                     {
                         int radius = (int)random.Randi() % 2 + 1;
-                        
+                        BlockTypes blockType;
+                        float rand = random.Randf();
+                        if(rand < 0.6f)
+                        {
+                            blockType = BlockTypes.Coal;
+                        }
+                        else if(rand < 0.9f)
+                        {
+                            blockType = BlockTypes.CopperOre;
+                        }
+                        else
+                        {
+                            blockType = BlockTypes.IronOre;
+                        }
                         for(long iy = -radius; iy < radius; ++iy)
                         {
                             long dx = (int)Mathf.Sqrt(radius * radius - iy * iy);
                             for(long ix = - dx; ix < dx; ++ix)
                             {
                                 if((long)x + ix >= CHUNK_SIZE || (long)z + iy >=CHUNK_SIZE) GD.Print(x, y);
-                                chunk[ (long)x + ix, chunk_heights[(long)x + ix,(long)z + iy],(long)z + iy] = (byte)BlockTypes.Coal;
+                                chunk[ (long)x + ix, chunk_heights[(long)x + ix,(long)z + iy],(long)z + iy] = (byte)blockType;
                                 
                             }
                         }

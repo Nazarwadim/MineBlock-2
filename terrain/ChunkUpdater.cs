@@ -89,7 +89,7 @@ public partial class ChunkUpdater : Node
                     dy = t;
                     
                 }
-                if(generatedMeshes >= cur_render/1.5f)
+                if(generatedMeshes >= cur_render)
                 {
                     CurrentRenderDistanse = (int)cur_render;
                     
@@ -172,7 +172,7 @@ public partial class ChunkUpdater : Node
                 {
                     continue;
                 }
-                ChunkResource chunkResource = ChunkLoader.GetChunkResourceOrNull(chunkPosition);
+                ChunkResource chunkResource = null;//ChunkLoader.GetChunkResourceOrNull(chunkPosition);
                 if (chunkResource == null)
                 {
                     byte[,,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
