@@ -11,6 +11,7 @@ radius = 0.375
 auto_exposure_enabled = true
 auto_exposure_scale = 0.2
 auto_exposure_speed = 0.3
+auto_exposure_max_sensitivity = 100.0
 
 [sub_resource type="AtlasTexture" id="2"]
 atlas = ExtResource("2")
@@ -19,6 +20,7 @@ region = Rect2(0, 0, 64, 64)
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 0
 script = ExtResource("1")
+is_serialisatable = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
@@ -37,6 +39,7 @@ far = 1000.0
 target_position = Vector3(0, 0, -4)
 
 [node name="SelectedBlock" type="TextureRect" parent="."]
+visible = false
 texture_filter = 1
 anchors_preset = 3
 anchor_left = 1.0

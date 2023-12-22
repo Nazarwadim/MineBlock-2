@@ -11,8 +11,6 @@ using System.Threading;
 [GlobalClass]
 public partial class ChunkResource : Resource
 {
-    
-
     [Export] public Vector2I Position;
     [Export] private byte[] _data;
 

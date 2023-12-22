@@ -2,3 +2,6 @@
 .godot/
 addons/godot-jolt
 example/
+**/*.bin
+**/*.shape
+*.res

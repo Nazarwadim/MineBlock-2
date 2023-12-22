@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=9 format=3 uid="uid://cft5uj8g6a10"]
 
+[ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Texture2D" uid="uid://blusv7ddjlb65" path="res://textures/AllSky_Overcast4_Low.png" id="2_oeplu"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
-[ext_resource type="Script" path="res://Scenes/free_look_camera.gd" id="3_s2chx"]
+[ext_resource type="Script" path="res://Scenes/free_look_camera.gd" id="4_41alm"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_65rho"]
 panorama = ExtResource("2_oeplu")
@@ -22,36 +23,34 @@ volumetric_fog_density = 0.004
 volumetric_fog_length = 300.0
 volumetric_fog_temporal_reprojection_amount = 0.8
 
-[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_gwx5p"]
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_0c7dd"]
 auto_exposure_enabled = true
 auto_exposure_scale = 0.2
-auto_exposure_speed = 0.4
-frustum_focus_distance = 50.0
-frustum_focal_length = 13.07
+frustum_focal_length = 15.04
 
 [node name="Game" type="Node"]
+script = ExtResource("1_m12kp")
 
-[node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment")]
+[node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "GenerationRelativePoint")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 50
 _worldEnvironment = NodePath("../WorldEnvironment")
+GenerationRelativePoint = NodePath("../Player")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_60wp7")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 0.940241, 0.340511, 0, -0.340511, 0.940241, -0.0205836, 0, -0.0831834)
-light_bake_mode = 0
+transform = Transform3D(1, 0, 0, 0, 0.907778, 0.419452, 0, -0.419452, 0.907778, -0.0205836, 0, -0.0831834)
 shadow_enabled = true
-directional_shadow_fade_start = 0.356
+directional_shadow_fade_start = 1.0
 directional_shadow_max_distance = 676.3
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.005, 30.523, 0)
-attributes = SubResource("CameraAttributesPhysical_gwx5p")
-doppler_tracking = 1
-current = true
-script = ExtResource("3_s2chx")
+[node name="SaveTimer" type="Timer" parent="."]
+wait_time = 10.0
 
-[connection signal="position_XZ_changed" from="Camera3D" to="VoxelWorld" method="_OnPlayerPositioXYChanged"]
+[node name="Player" type="Camera3D" parent="."]
+attributes = SubResource("CameraAttributesPhysical_0c7dd")
+script = ExtResource("4_41alm")
+
+[connection signal="position_XZ_changed" from="Player" to="VoxelWorld" method="_OnPlayerPositioXYChanged"]

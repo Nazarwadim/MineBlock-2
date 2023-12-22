@@ -3,7 +3,11 @@
 [ext_resource type="Texture2D" uid="uid://b4tnsxv70xmon" path="res://textures/texture_sheet.png" id="1"]
 
 [resource]
-transparency = 4
+transparency = 2
+alpha_scissor_threshold = 0.501
+alpha_antialiasing_mode = 0
+shading_mode = 2
+specular_mode = 2
 albedo_texture = ExtResource("1")
 texture_filter = 4
 texture_repeat = false
