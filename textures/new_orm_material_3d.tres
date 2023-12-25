@@ -1,0 +1,9 @@
+[gd_resource type="ORMMaterial3D" load_steps=2 format=3 uid="uid://dyai1tpr3e0pn"]
+
+[ext_resource type="Texture2D" uid="uid://c1g7aonqecmvd" path="res://textures/block_outline_texture.png" id="1_2bwro"]
+
+[resource]
+transparency = 2
+alpha_scissor_threshold = 0.621
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_2bwro")

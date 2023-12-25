@@ -67,7 +67,6 @@ func _ready():
 	pick_joint["linear_limit_spring_z/damping"] = pick_damping
 	pick_joint["solver_velocity_iterations"] = pick_iterations
 	pick_joint["solver_position_iterations"] = pick_iterations
-	position_XZ_changed.emit(Vector2i(position.x, position.z));
 
 func _exit_tree() -> void:
 	pick_joint.queue_free()

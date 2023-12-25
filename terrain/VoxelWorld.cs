@@ -109,7 +109,6 @@ public partial class VoxelWorld : Node
     }
     public void SetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition, ChunkDataGenerator.BlockTypes blockType)
     {
-        GD.Print(blockType);
         Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
         ChunkResource chunkResource = ChunksResources[chunkPosition];
         Vector3I subPosition = blockGlobalPosition - new Vector3I(chunkPosition.X, 0, chunkPosition.Y) * ChunkDataGenerator.CHUNK_SIZE;

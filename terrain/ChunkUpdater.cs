@@ -20,12 +20,16 @@ public partial class ChunkUpdater : Node
         _mtx = new();
         ChangedChunksToSave = new();
     }
+    public ChunkUpdater(Dictionary<Vector2I, ChunkResource> chunksResources, Dictionary<Vector2I, ChunkStaticBody> chunksBodies, VoxelWorld world, Vector2I midleChunkPos) : this(chunksResources,chunksBodies, world)
+    {
+        _middleChunkPos = midleChunkPos;
+    }
     private Dictionary<Vector2I, ChunkResource> _chunksResources;
     private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
 
     private VoxelWorld _voxelWorld;
 
-    private Vector2I _middleChunkPos;
+    private Vector2I _middleChunkPos = new();
     private bool _exitLoops;
     private Thread _thread1;
     private System.Threading.Mutex _mtx;
@@ -34,7 +38,7 @@ public partial class ChunkUpdater : Node
     public override void _Ready()
     {
         _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
-
+        _UpdateChunks();
     }
 
 
@@ -128,8 +132,10 @@ public partial class ChunkUpdater : Node
                     dx2 = -dy2;
                     dy2 = t;
                 }
+                
                 if (generatedMeshes > cur_render)
-                {                    
+                {
+                         
                     CurrentRenderDistanse = (int)cur_render;
 
                     CallDeferred("emit_signal", SignalName.CurrentRenderDistanseChanged, cur_render);

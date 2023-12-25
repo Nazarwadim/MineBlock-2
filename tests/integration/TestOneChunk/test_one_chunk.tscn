@@ -1,9 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cxjko7o414s8w"]
+[gd_scene load_steps=7 format=3 uid="uid://cxjko7o414s8w"]
 
 [ext_resource type="Script" path="res://Scenes/free_look_camera.gd" id="1_4qg2f"]
 [ext_resource type="Script" path="res://tests/integration/TestOneChunk/Terain.cs" id="2_sminx"]
 [ext_resource type="Texture2D" uid="uid://blusv7ddjlb65" path="res://textures/AllSky_Overcast4_Low.png" id="3_6htom"]
-[ext_resource type="Shape3D" uid="uid://bljmovn1i70dc" path="res://shape.shape" id="4_sstnh"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_2ge8g"]
 panorama = ExtResource("3_6htom")
@@ -31,4 +30,3 @@ environment = SubResource("Environment_iw358")
 transform = Transform3D(1, 0, 0, 0, 0.763706, 0.645564, 0, -0.645564, 0.763706, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = ExtResource("4_sstnh")

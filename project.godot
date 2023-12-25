@@ -23,10 +23,6 @@ InventorySystem="*res://addons/inventory-system/core/inventory_system.tscn"
 
 settings/stdout/print_fps=true
 
-[display]
-
-window/vsync/vsync_mode=0
-
 [dotnet]
 
 project/assembly_name="Voxel Game 2.0"

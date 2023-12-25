@@ -33,6 +33,7 @@ public partial class ChunkStaticBody : StaticBody3D
     
     public override void _Ready()
     {
+        CollisionLayer = 3;
         if(ColisionShape == null)
         {
             ColisionShape = new ();
