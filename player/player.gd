@@ -22,14 +22,26 @@ const SAVE_PATH = "user://PlayerTransform.bin"
 var can_move:bool = false
 signal position_XZ_changed(position:Vector2i)
 func _ready():
+	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	_voxel_world.CurrentRenderDistanseChanged.connect(_on_current_render_distance_changed)
+	if is_serialisatable:
+		position_XZ_changed.emit(Vector2i(position.x, position.z))
+		_set_deafult_rotation_for_areas.call_deferred()
 
+func get_position_XY_changed() ->Signal:
+	return position_XZ_changed
+	
 
 func _enter_tree():
 	if(FileAccess.file_exists(SAVE_PATH) and is_serialisatable):
 		transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
 		
+		
+func _set_deafult_rotation_for_areas():
+	$BlockToPlaseArea.rotation = Vector3(0,0,0)
+	$BlockToRemoveArea.rotation = Vector3(0,0,0)
+
 func _exit_tree():
 	if is_serialisatable:
 		save()	

@@ -77,7 +77,6 @@ shape = SubResource("BoxShape3D_no3fp")
 [node name="BlockToRemoveArea" type="Area3D" parent="."]
 transform = Transform3D(1.02, 0, 0, 0, 1.02, 0, 0, 0, 1.02, 0, 0, 0)
 top_level = true
-visible = false
 monitorable = false
 
 [node name="OutlineMeshInstance3D" type="MeshInstance3D" parent="BlockToRemoveArea"]

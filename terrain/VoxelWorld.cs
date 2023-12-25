@@ -45,8 +45,10 @@ public partial class VoxelWorld : Node
         ChunkDataGenerator.Seed = Seed;
         _chunkUpdater = new ChunkUpdater(ChunksResources, ChunksBodies, this);
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
+        Signal signal = (Signal)GenerationRelativePoint.Call("get_position_XY_changed");
+        //GenerationRelativePoint.Call("connect")
+        GD.Print( GenerationRelativePoint.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged)));
         AddChild(_chunkUpdater);
-        
     }
     private void _OnCurrentRenderDistanceChanged(int renderDistance)
     {

@@ -26,12 +26,15 @@ volumetric_fog_temporal_reprojection_amount = 0.8
 
 [node name="Game" type="Node"]
 script = ExtResource("1_m12kp")
+use_serealisation = true
 
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "GenerationRelativePoint")]
 script = ExtResource("2_yr4dd")
 Seed = 1
+RenderDistance = 3
 _worldEnvironment = NodePath("../WorldEnvironment")
-GenerationRelativePoint = NodePath("../Player2")
+GenerationRelativePoint = NodePath("../Player")
+IsSerialization = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_60wp7")
@@ -45,6 +48,5 @@ directional_shadow_max_distance = 676.3
 [node name="SaveTimer" type="Timer" parent="."]
 wait_time = 10.0
 
-[node name="Player2" parent="." instance=ExtResource("4_ms1y1")]
+[node name="Player" parent="." instance=ExtResource("4_ms1y1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.817, 200, -1.845)
-is_serialisatable = false

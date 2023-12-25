@@ -88,7 +88,7 @@ public partial class ChunkUpdater : Node
     {
         try
         {
-            for (long cur_render = -1; cur_render <= _voxelWorld.RenderDistance; ++cur_render)
+            for (long cur_render = -1; cur_render <= _voxelWorld.RenderDistance; cur_render+=2)
             {
                 //start at top-left
                 long x1 = _middleChunkPos.X - ((cur_render + 2)  / 2);
@@ -133,9 +133,9 @@ public partial class ChunkUpdater : Node
                     dy2 = t;
                 }
                 
-                if (generatedMeshes > cur_render)
+                if (generatedMeshes > cur_render && cur_render >= 0)
                 {
-                         
+                    GD.Print(cur_render);
                     CurrentRenderDistanse = (int)cur_render;
 
                     CallDeferred("emit_signal", SignalName.CurrentRenderDistanseChanged, cur_render);
@@ -261,8 +261,6 @@ public partial class ChunkUpdater : Node
     {
         return (to.X - from.X) * (to.X - from.X) + (to.Y - from.Y) * (to.Y - from.Y);
     }
-
-
 
 
 }

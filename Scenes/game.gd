@@ -13,7 +13,7 @@ func _ready():
 	
 func _on_save_timer_timeout():
 	if use_serealisation:
-		if $Player.is_serialisation:
+		if $Player.is_serialisatable:
 			$Player.save()
 		if $VoxelWorld.IsSerialization:
 			$VoxelWorld.Save()
