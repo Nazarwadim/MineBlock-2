@@ -1,7 +1,7 @@
 class_name FreeLookCamera3D extends Camera3D
 
 
-@export var is_serialisation:bool = false
+@export var is_serialisatable:bool = false
 @export_range(0.0, 1000.0, 0.1, "or_greater", "exp", "suffix:u/s")
 var initial_speed := 10.0
 
@@ -44,7 +44,7 @@ signal position_XZ_changed(position:Vector2i)
 @onready var position_before:Vector2i = Vector2i(position.x,  position.z)
 func _enter_tree() -> void:
 	
-	if(FileAccess.file_exists(SAVE_PATH) and is_serialisation):
+	if(FileAccess.file_exists(SAVE_PATH) and is_serialisatable):
 		transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
 		
 func _ready():	
@@ -71,10 +71,11 @@ func _ready():
 func _exit_tree() -> void:
 	pick_joint.queue_free()
 	pick_anchor.queue_free()
-	if is_serialisation:
+	if is_serialisatable:
 		save()
 	
-
+func get_position_XY_changed() -> Signal:
+	return position_XZ_changed
 
 func _input(event: InputEvent) -> void:
 	if not current:

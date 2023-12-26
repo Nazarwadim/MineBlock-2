@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://1s4asqpay67m"]
+[gd_scene load_steps=11 format=3 uid="uid://1s4asqpay67m"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b4tnsxv70xmon" path="res://textures/texture_sheet.png" id="2"]
@@ -9,12 +9,19 @@
 height = 1.75
 radius = 0.375
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jyixh"]
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_sbw07"]
 auto_exposure_enabled = true
-auto_exposure_scale = 0.2
-auto_exposure_speed = 0.3
-auto_exposure_min_sensitivity = 30.0
-auto_exposure_max_sensitivity = 100.0
+auto_exposure_scale = 0.25
+auto_exposure_speed = 0.4
+frustum_focal_length = 15.04
+auto_exposure_min_exposure_value = -1.0
+auto_exposure_max_exposure_value = 5.0
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jsx4i"]
+frequency = 0.003
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5fmwv"]
+noise = SubResource("FastNoiseLite_jsx4i")
 
 [sub_resource type="AtlasTexture" id="2"]
 atlas = ExtResource("2")
@@ -34,14 +41,19 @@ shape = SubResource("1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
-attributes = SubResource("CameraAttributesPractical_jyixh")
-fov = 74.0
-near = 0.02
-far = 1000.0
+attributes = SubResource("CameraAttributesPhysical_sbw07")
 
 [node name="RayCast3D" type="RayCast3D" parent="Head"]
 target_position = Vector3(0, 0, -4)
 collision_mask = 2
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0.98634, 0.164721, 0, -0.164721, 0.98634, 0, 0.0912517, 0)
+light_projector = SubResource("NoiseTexture2D_5fmwv")
+shadow_enabled = true
+shadow_opacity = 0.33
+spot_range = 15.0
+spot_angle = 40.95
 
 [node name="SelectedBlock" type="TextureRect" parent="."]
 visible = false

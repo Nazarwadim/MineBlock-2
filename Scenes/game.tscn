@@ -1,21 +1,24 @@
 [gd_scene load_steps=8 format=3 uid="uid://cft5uj8g6a10"]
 
 [ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
-[ext_resource type="Texture2D" uid="uid://blusv7ddjlb65" path="res://textures/AllSky_Overcast4_Low.png" id="2_oeplu"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
-[ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_ms1y1"]
+[ext_resource type="Texture2D" uid="uid://bh6p41nk43blv" path="res://textures/Epic_BlueSunset_EquiRect_flat.png" id="3_6qnuv"]
+[ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_lr1jj"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_65rho"]
-panorama = ExtResource("2_oeplu")
+panorama = ExtResource("3_6qnuv")
 
 [sub_resource type="Sky" id="Sky_u6213"]
 sky_material = SubResource("PanoramaSkyMaterial_65rho")
 
 [sub_resource type="Environment" id="Environment_60wp7"]
 background_mode = 2
-background_energy_multiplier = 0.5
+background_energy_multiplier = 0.1
 sky = SubResource("Sky_u6213")
+sky_rotation = Vector3(0, 0.20944, 0)
 tonemap_mode = 2
+sdfgi_enabled = true
+sdfgi_min_cell_size = 1.0
 glow_enabled = true
 fog_light_energy = 1.34
 fog_sky_affect = 0.316
@@ -31,7 +34,6 @@ use_serealisation = true
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "GenerationRelativePoint")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 3
 _worldEnvironment = NodePath("../WorldEnvironment")
 GenerationRelativePoint = NodePath("../Player")
 IsSerialization = true
@@ -40,13 +42,18 @@ IsSerialization = true
 environment = SubResource("Environment_60wp7")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
-transform = Transform3D(1, 0, 0, 0, 0.907778, 0.419452, 0, -0.419452, 0.907778, -0.0205836, 0, -0.0831834)
+transform = Transform3D(0.976672, -0.0187154, 0.213918, 0, 0.996195, 0.0871557, -0.214735, -0.0851226, 0.972956, -0.0205836, 0, -0.0831834)
+light_color = Color(0.980392, 0.839216, 0.647059, 1)
+light_energy = 0.3
+light_bake_mode = 1
 shadow_enabled = true
+shadow_bias = 0.025
+shadow_normal_bias = 2.084
 directional_shadow_fade_start = 1.0
 directional_shadow_max_distance = 676.3
 
 [node name="SaveTimer" type="Timer" parent="."]
-wait_time = 10.0
+wait_time = 30.0
 
-[node name="Player" parent="." instance=ExtResource("4_ms1y1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.817, 200, -1.845)
+[node name="Player" parent="." instance=ExtResource("4_lr1jj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1725, 151.799, 17.8879)

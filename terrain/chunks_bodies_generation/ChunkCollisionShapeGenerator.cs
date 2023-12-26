@@ -36,25 +36,27 @@ namespace ChunkBodyGeneration
         {
             Vector3[] data = convexPolygonShape3D.Data;
             List<Vector3> pointsData = new List<Vector3>(data);
+            List<Vector3> pointsToSet = new List<Vector3>();
             Vector3[] verts = ChunksBodyGenerator.CalculateBlockVerts(blockPosition);
             Vector3[] verts1_ = { verts[2], verts[0], verts[3], verts[1] };
-            _SetBlockColisionTriangle(pointsData, verts1_);
+            _SetBlockColisionTriangle(pointsToSet, verts1_);
          
             Vector3[] verts2_ = { verts[7], verts[5], verts[6], verts[4] };
-            _SetBlockColisionTriangle(pointsData, verts2_);
+            _SetBlockColisionTriangle(pointsToSet, verts2_);
 
             Vector3[] verts3_ = { verts[6], verts[4], verts[2], verts[0] };
-            _SetBlockColisionTriangle(pointsData, verts3_);
+            _SetBlockColisionTriangle(pointsToSet, verts3_);
            
             Vector3[] verts4_ = { verts[3], verts[1], verts[7], verts[5] };
-           _SetBlockColisionTriangle(pointsData, verts4_);
-
+           _SetBlockColisionTriangle(pointsToSet, verts4_);
 
             Vector3[] verts5_ = { verts[2], verts[3], verts[6], verts[7] };
-            _SetBlockColisionTriangle(pointsData, verts5_);
-
+            _SetBlockColisionTriangle(pointsToSet, verts5_);
             Vector3[] verts6_ = { verts[4], verts[5], verts[0], verts[1] };
-            _SetBlockColisionTriangle(pointsData, verts6_);
+            _SetBlockColisionTriangle(pointsToSet, verts6_);
+            
+            pointsData.RemoveAll(item => pointsToSet.Contains(item));
+            convexPolygonShape3D.Data = pointsData.ToArray();
         }
 
 

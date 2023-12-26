@@ -20,14 +20,14 @@ public static class ChunksBodyGenerator
     public static Vector3[] CalculateBlockVerts(Vector3 blockPosition)
     {
         Vector3[] array = {
-		    new Vector3(blockPosition.X, blockPosition.Y, blockPosition.Z),
-		    new Vector3(blockPosition.X, blockPosition.Y, blockPosition.Z + 1),
-		    new Vector3(blockPosition.X, blockPosition.Y + 1, blockPosition.Z),
-		    new Vector3(blockPosition.X, blockPosition.Y + 1, blockPosition.Z + 1),
-		    new Vector3(blockPosition.X + 1, blockPosition.Y, blockPosition.Z),
-		    new Vector3(blockPosition.X + 1, blockPosition.Y, blockPosition.Z + 1),
-		    new Vector3(blockPosition.X + 1, blockPosition.Y + 1, blockPosition.Z),
-		    new Vector3(blockPosition.X + 1, blockPosition.Y + 1, blockPosition.Z + 1)
+		    new(blockPosition.X, blockPosition.Y, blockPosition.Z),
+		    new(blockPosition.X, blockPosition.Y, blockPosition.Z + 1),
+		    new(blockPosition.X, blockPosition.Y + 1, blockPosition.Z),
+		    new(blockPosition.X, blockPosition.Y +  1, blockPosition.Z + 1),
+		    new(blockPosition.X + 1, blockPosition.Y, blockPosition.Z),
+		    new(blockPosition.X + 1, blockPosition.Y, blockPosition.Z + 1),
+		    new(blockPosition.X + 1, blockPosition.Y + 1, blockPosition.Z),
+		    new(blockPosition.X + 1, blockPosition.Y + 1, blockPosition.Z + 1)
         };
         return array;
     }

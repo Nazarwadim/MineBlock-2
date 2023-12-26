@@ -42,12 +42,16 @@ public partial class ChunkResource : Resource
         try
         {
             ChunkResource chunk = (ChunkResource)ResourceLoader.Load(ChunkSaver.SAVE_PATH + GD.VarToStr(position) + ".res");
+            if(chunk._data.Length != ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE)
+            {
+                throw new Exception();
+            }
             chunk.Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
             Buffer.BlockCopy(chunk._data, 0, chunk.Data, 0, chunk._data.Length);
             chunk._data = null;
             return chunk;
         }
-        catch (NullReferenceException)
+        catch (Exception)
         {
             DirAccess.RemoveAbsolute(ChunkSaver.SAVE_PATH + GD.VarToStr(position) + ".res");
             return null;

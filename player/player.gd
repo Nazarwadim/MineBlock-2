@@ -22,7 +22,6 @@ const SAVE_PATH = "user://PlayerTransform.bin"
 var can_move:bool = false
 signal position_XZ_changed(position:Vector2i)
 func _ready():
-	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	_voxel_world.CurrentRenderDistanseChanged.connect(_on_current_render_distance_changed)
 	if is_serialisatable:
@@ -70,10 +69,13 @@ func _physics_process(delta):
 			_voxel_world.SetBlockTypeInGlobalPosition(block_pos_watch, 0)
 			
 		if Input.is_action_just_pressed("place_block"):
-			if block_pos_set != _block_pos_set_before:
-				await get_tree().create_timer(delta + 0.01).timeout
-			if not $BlockToPlaseArea.overlaps_body(self):
-				_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 13)
+			if block_pos_set.y < 255 && block_pos_set.y >= 0:
+				if block_pos_set != _block_pos_set_before:
+					await get_tree().create_timer(delta + 0.01).timeout
+				if not $BlockToPlaseArea.overlaps_body(self):
+					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 13)
+			else :
+				printerr("You've gone beyond the height limit")
 		_block_pos_set_before = block_pos_set
 	else :
 		$BlockToRemoveArea.visible = false	
@@ -105,6 +107,9 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 			_mouse_motion += event.relative
+	if event is InputEventKey:
+		if event.is_action_pressed("use_flashlight"):
+			$Head/SpotLight3D.visible = not $Head/SpotLight3D.visible
 
 
 
