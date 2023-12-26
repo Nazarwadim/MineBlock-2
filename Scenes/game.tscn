@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
 [ext_resource type="Texture2D" uid="uid://bh6p41nk43blv" path="res://textures/Epic_BlueSunset_EquiRect_flat.png" id="3_6qnuv"]
-[ext_resource type="Script" path="res://Scenes/free_look_camera.gd" id="4_4uy0r"]
+[ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_lr1jj"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_65rho"]
 panorama = ExtResource("3_6qnuv")
@@ -35,7 +35,8 @@ script = ExtResource("2_yr4dd")
 Seed = 1
 RenderDistance = 50
 _worldEnvironment = NodePath("../WorldEnvironment")
-GenerationRelativePoint = NodePath("../Camera3D")
+GenerationRelativePoint = NodePath("../Player")
+IsSerialization = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_60wp7")
@@ -54,5 +55,5 @@ directional_shadow_max_distance = 676.3
 [node name="SaveTimer" type="Timer" parent="."]
 wait_time = 30.0
 
-[node name="Camera3D" type="Camera3D" parent="."]
-script = ExtResource("4_4uy0r")
+[node name="Player" parent="." instance=ExtResource("4_lr1jj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.1725, 151.799, 17.8879)

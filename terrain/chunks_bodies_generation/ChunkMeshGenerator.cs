@@ -59,7 +59,7 @@ namespace ChunkBodyGeneration
             
             _GenerateInsideChunkSurfaceTool(surfaceTool, mainDataChunk);
             
-            _GenerateUpDownYSurfaceTool(surfaceTool, world, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
+            _GenerateUpDownYSurfaceTool(surfaceTool, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             
             _GenerateChunkSidesSurfaceTool(surfaceTool, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             
@@ -115,7 +115,7 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateUpDownYSurfaceTool(SurfaceTool surfaceTool, VoxelWorld voxelWorld, ChunkResource chunk, 
+        private static void _GenerateUpDownYSurfaceTool(SurfaceTool surfaceTool, ChunkResource chunk, 
             ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
             Vector3I chunkPosition = new(chunk.Position.X, 0, chunk.Position.Y);

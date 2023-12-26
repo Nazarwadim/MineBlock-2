@@ -11,6 +11,8 @@ namespace ChunkBodyGeneration
     
     public static class ChunksShapeGenerator
     {
+        public const short CHUNK_SIZE = ChunkDataGenerator.CHUNK_SIZE;
+        public const short CHUNK_HEIGHT = ChunkDataGenerator.CHUNK_HEIGHT;
         public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, VoxelWorld world)
         {
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunkResource.Data;
@@ -19,46 +21,43 @@ namespace ChunkBodyGeneration
                 throw new Exception("No elements in array ChunksColisionGenerator.cs 18");
             }
 
+            bool existsSideChunks = true;
+            ChunkResource leftChunk;
+            ChunkResource rightChunk;
+            ChunkResource upChunk;
+            ChunkResource downChunk;
+            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out leftChunk))
+            {
+                existsSideChunks = false;
+            }
+            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out rightChunk))
+            {
+                existsSideChunks = false;
+            }
+            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out upChunk))
+            {
+                existsSideChunks = false;
+            }
+            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out downChunk))
+            {
+                existsSideChunks = false;
+            }
+            if(!existsSideChunks)
+            {
+                throw new NullReferenceException("Try to generate chunkBody without chunkResources near it!");
+            }
             
             List<Vector3> points = new();
             
             _GenerateInsideChunkSurfaceTool(points, mainDataChunk);            
-            _GenerateUpDownYSurfaceTool(points, mainDataChunk, world, chunkResource);
-            _GenerateChunkSidesSurfaceTool(points, chunkResource, world);
+            _GenerateUpDownYSurfaceTool(points,chunkResource, leftChunk, rightChunk, downChunk, upChunk);
+            _GenerateChunkSidesSurfaceTool(points, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             ConcavePolygonShape3D concavePolygonShape3D = new()
             {
                 Data = points.ToArray()
             };
             return concavePolygonShape3D;
         }
-
-        public static void SetBlockCollisionIntoShape(ConcavePolygonShape3D convexPolygonShape3D, ChunkDataGenerator.BlockTypes blockType, Vector3I blockPosition)
-        {
-            Vector3[] data = convexPolygonShape3D.Data;
-            List<Vector3> pointsData = new List<Vector3>(data);
-            List<Vector3> pointsToSet = new List<Vector3>();
-            Vector3[] verts = ChunksBodyGenerator.CalculateBlockVerts(blockPosition);
-            Vector3[] verts1_ = { verts[2], verts[0], verts[3], verts[1] };
-            _SetBlockColisionTriangle(pointsToSet, verts1_);
-         
-            Vector3[] verts2_ = { verts[7], verts[5], verts[6], verts[4] };
-            _SetBlockColisionTriangle(pointsToSet, verts2_);
-
-            Vector3[] verts3_ = { verts[6], verts[4], verts[2], verts[0] };
-            _SetBlockColisionTriangle(pointsToSet, verts3_);
-           
-            Vector3[] verts4_ = { verts[3], verts[1], verts[7], verts[5] };
-           _SetBlockColisionTriangle(pointsToSet, verts4_);
-
-            Vector3[] verts5_ = { verts[2], verts[3], verts[6], verts[7] };
-            _SetBlockColisionTriangle(pointsToSet, verts5_);
-            Vector3[] verts6_ = { verts[4], verts[5], verts[0], verts[1] };
-            _SetBlockColisionTriangle(pointsToSet, verts6_);
-            
-            pointsData.RemoveAll(item => pointsToSet.Contains(item));
-            convexPolygonShape3D.Data = pointsData.ToArray();
-        }
-
 
         //Summary:
         //  This is unsafe function!
@@ -103,30 +102,36 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateUpDownYSurfaceTool(List<Vector3> pointsData, ChunkDataGenerator.BlockTypes[,,] mainDataChunk, VoxelWorld voxelWorld, ChunkResource chunk)
+        private static void _GenerateUpDownYSurfaceTool(List<Vector3> pointsData, ChunkResource chunk, 
+            ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
             Vector3I chunkPosition = new(chunk.Position.X, 0, chunk.Position.Y);
+            ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunk.Data;
+
+            ChunkDataGenerator.BlockTypes[,,] leftDataChunk = chunkLeft.Data;
+            ChunkDataGenerator.BlockTypes[,,] rightDataChunk = chunkRight.Data;
+            ChunkDataGenerator.BlockTypes[,,] downDataChunk = chunkDown.Data;
+            ChunkDataGenerator.BlockTypes[,,] upDataChunk = chunkUp.Data;
             bool[] neighbourBlocksArePhisics = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
-            for (long y = 0; y < ChunkDataGenerator.CHUNK_HEIGHT; y += ChunkDataGenerator.CHUNK_HEIGHT - 1)
+            for (long y = 0; y < CHUNK_HEIGHT; y += CHUNK_HEIGHT - 1)
             {
                 long blockYSideCheck = y == 0 ? 1 : -1;
-                neighbourBlocksArePhisics[(int)BlockSides.Down] = y == 0;
-                neighbourBlocksArePhisics[(int)BlockSides.Up] = y != 0;
-                for (long x = 1; x < ChunkDataGenerator.CHUNK_SIZE - 1; ++x)
+                neighbourBlocksArePhisics[4] = y == 0;
+                neighbourBlocksArePhisics[5] = y != 0;
+                for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                 {
-                    for (long z = 1; z < ChunkDataGenerator.CHUNK_SIZE - 1; ++z)
+                    for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
-                        ulong counter = 0;
-
-                        neighbourBlocksArePhisics[(int)BlockSides.Front] =IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
+                        long counter = 0;
+                        neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, z + 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
-                        neighbourBlocksArePhisics[(int)BlockSides.Right]  = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
+                        neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
                         foreach (bool item in neighbourBlocksArePhisics)
@@ -141,18 +146,18 @@ namespace ChunkBodyGeneration
                             continue;
                         }
 
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z),  neighbourBlocksArePhisics);
+                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
 
                     }
                 }
 
 
-                for (long x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x += ChunkDataGenerator.CHUNK_SIZE - 1)
+                for (long x = 0; x < CHUNK_SIZE; x += CHUNK_SIZE - 1)
                 {
-                    for (long z = 1; z < ChunkDataGenerator.CHUNK_SIZE - 1; ++z)
+                    for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
@@ -162,13 +167,14 @@ namespace ChunkBodyGeneration
 
                         if (x == 0)
                         {
-                            neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x - 1, (int)y, (int)z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
+                                leftDataChunk[CHUNK_SIZE - 1,y,z]);
                             neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         }
                         else
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
-                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x + 1, (int)y, (int)z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(rightDataChunk[0,y,z]);
                         }
 
 
@@ -189,25 +195,26 @@ namespace ChunkBodyGeneration
                         _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                     }
                 }
-                for (long z = 0; z < ChunkDataGenerator.CHUNK_SIZE; z += ChunkDataGenerator.CHUNK_SIZE - 1)
+                for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                 {
-                    for (long x = 1; x < ChunkDataGenerator.CHUNK_SIZE - 1; ++x)
+                    for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
-                        ulong counter = 0;
+                        long counter = 0;
                         if (z == 0)
                         {
-                            neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x, (int)y, (int)z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
+                                downDataChunk[x,y,CHUNK_SIZE - 1]);
                             neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, z + 1]);
                         }
                         else
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
-                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x, (int)y, (int)z + 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(upDataChunk[x,y,0]);
                         }
                         neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
@@ -225,27 +232,42 @@ namespace ChunkBodyGeneration
                             continue;
                         }
 
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z),  neighbourBlocksArePhisics);
+                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                     }
                 }
-                for (long x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x += ChunkDataGenerator.CHUNK_SIZE - 1)
+                for (long x = 0; x < CHUNK_SIZE; x += CHUNK_SIZE - 1)
                 {
-                    for (long z = 0; z < ChunkDataGenerator.CHUNK_SIZE; z += ChunkDataGenerator.CHUNK_SIZE - 1)
+                    for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == 0)
                         {
                             continue;
                         }
-                        ulong counter = 0;
-                        neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x, (int)y, (int)z - 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
-                        neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x, (int)y, (int)z + 1) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
-                        neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x - 1, (int)y, (int)z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
-                        neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(new Vector3I((int)x + 1, (int)y, (int)z) + chunkPosition * ChunkDataGenerator.CHUNK_SIZE));
+                        long counter = 0;
+                        if (x == 0)
+                        {
+                            neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
+                                leftDataChunk[CHUNK_SIZE - 1,y,z]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[1, y, z]);
+                        }
+                        else
+                        {           
+                            neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(rightDataChunk[0,y,z]);
+                        }
+                        if (z == 0)
+                        {
+                            
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, 1]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
+                                downDataChunk[x,y, CHUNK_SIZE -1]);
+                        }
+                        else
+                        {     
+                            neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(upDataChunk[x,y,0]);
+                        }
 
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
@@ -267,37 +289,41 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateChunkSidesSurfaceTool(List<Vector3> pointsData, ChunkResource chunk, VoxelWorld voxelWorld)
+        private static void _GenerateChunkSidesSurfaceTool(List<Vector3> pointsData, ChunkResource chunk,
+            ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
             bool[] neighbourBlocksArePhisics = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunk.Data;
-            Vector3I chunkPositionGlobal = new(chunk.Position.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunk.Position.Y * ChunkDataGenerator.CHUNK_SIZE);
-            for (long i = 0; i < ChunkDataGenerator.CHUNK_SIZE; i += ChunkDataGenerator.CHUNK_SIZE - 1)
+
+            ChunkDataGenerator.BlockTypes[,,] leftDataChunk = chunkLeft.Data;
+            ChunkDataGenerator.BlockTypes[,,] rightDataChunk = chunkRight.Data;
+            ChunkDataGenerator.BlockTypes[,,] downDataChunk = chunkDown.Data;
+            ChunkDataGenerator.BlockTypes[,,] upDataChunk = chunkUp.Data;
+            
+            Vector3I chunkPositionGlobal = new(chunk.Position.X * CHUNK_SIZE, 0, chunk.Position.Y * CHUNK_SIZE);
+            for (long i = 0; i < CHUNK_SIZE; i += CHUNK_SIZE - 1)
             {
-                for (long x = 1; x < ChunkDataGenerator.CHUNK_SIZE - 1; ++x)
+                for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                 {
-                    for (long y = 1; y < ChunkDataGenerator.CHUNK_HEIGHT - 1; ++y)
+                    for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, i];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
-
+                        
                         long counter = 0;
                         if (i == 0)
                         {
-                            
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(x + chunkPositionGlobal.X, y, i - 1 + chunkPositionGlobal.Z));
-
-                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, i + 1]);
+                                downDataChunk[x,y,CHUNK_SIZE - 1]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, 1]);
+                            
                         }
                         else
-                        {
-                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(
-                               voxelWorld.GetBlockTypeInGlobalPosition(
-                                x + chunkPositionGlobal.X, y, i + 1 + chunkPositionGlobal.Z));
+                        {    
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(upDataChunk[x,y,0]);
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, i - 1]);
                         }
 
@@ -318,33 +344,33 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)i), neighbourBlocksArePhisics);
+                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)i),  neighbourBlocksArePhisics);
 
 
                     }
                 }
 
-                for (long y = 1; y < ChunkDataGenerator.CHUNK_HEIGHT - 1; ++y)
+                for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                 {
-                    for (long z = 1; z < ChunkDataGenerator.CHUNK_SIZE - 1; ++z)
+                    for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
+                        
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
                         long counter = 0;
                         if (i == 0)
                         {
+                            
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(i - 1 + chunkPositionGlobal.X, y, z + chunkPositionGlobal.Z));
-
-                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[i + 1, y, z]);
+                                leftDataChunk[CHUNK_SIZE - 1,y,z]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[1, y, z]);
                         }
                         else
                         {
-                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(
-                               voxelWorld.GetBlockTypeInGlobalPosition(i + 1 + chunkPositionGlobal.X, y, z + chunkPositionGlobal.Z));
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(rightDataChunk[0,y,z]);
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[i - 1, y, z]);
                         }
 
@@ -365,19 +391,21 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        _BuildBlockColision(pointsData, new Vector3I((int)i, (int)y, (int)z), neighbourBlocksArePhisics);
+                        
+                        _BuildBlockColision(pointsData, new Vector3I((int)i, (int)y, (int)z),  neighbourBlocksArePhisics);
+                        
                     }
                 }
             }
-
-            for (long x = 0; x < ChunkDataGenerator.CHUNK_SIZE; x += ChunkDataGenerator.CHUNK_SIZE - 1)
+            
+            for (long x = 0; x < CHUNK_SIZE; x += CHUNK_SIZE - 1)
             {
-                for (long y = 1; y < ChunkDataGenerator.CHUNK_HEIGHT - 1; ++y)
+                for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                 {
-                    for (long z = 0; z < ChunkDataGenerator.CHUNK_SIZE; z += ChunkDataGenerator.CHUNK_SIZE - 1)
+                    for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (IsBlockNotCollide(blockId))
+                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
                         {
                             continue;
                         }
@@ -385,35 +413,32 @@ namespace ChunkBodyGeneration
                         if (x == 0)
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(
-                                    x - 1 + chunkPositionGlobal.X, y, z + chunkPositionGlobal.Z));
-                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
+                                leftDataChunk[CHUNK_SIZE - 1,y,z]);
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[1, y, z]);
                         }
                         else
                         {
+                            
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
-                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(
-                                    x + 1 + chunkPositionGlobal.X, y, z + chunkPositionGlobal.Z));
+                            neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(rightDataChunk[0,y,z]);
                         }
                         if (z == 0)
                         {
-                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, z + 1]);
+                            
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, 1]);
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(
-                                    x + chunkPositionGlobal.X, y, z - 1 + chunkPositionGlobal.Z));
+                                downDataChunk[x,y, CHUNK_SIZE -1]);
                         }
                         else
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
-                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(
-                                voxelWorld.GetBlockTypeInGlobalPosition(
-                                    x + chunkPositionGlobal.X, y, z + 1 + chunkPositionGlobal.Z));
+                            neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(upDataChunk[x,y,0]);
                         }
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[x, y - 1, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + 1, z]);
 
-                        
+
+
                         foreach (bool item in neighbourBlocksArePhisics)
                         {
                             if (item)
@@ -425,11 +450,11 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
+                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z),  neighbourBlocksArePhisics);
                     }
                 }
             }
-
+            
         }
 
         private static void _BuildBlockColision(List<Vector3> pointsData, Vector3I blockSubPosition, bool[] sidesToDraw)
@@ -468,8 +493,6 @@ namespace ChunkBodyGeneration
             }
 
         }
-	// new_shape.set_faces([Vector3.ZERO, Vector3(1,0,0), Vector3(0,1,0),
-	// 	Vector3(1,1,0), Vector3(1,0,0), Vector3(0,1,0)])
 
         private static void _SetBlockColisionTriangle(List<Vector3> points, Vector3[] verts)
         {
