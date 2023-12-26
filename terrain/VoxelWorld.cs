@@ -57,6 +57,7 @@ public partial class VoxelWorld : Node
     
     private void _OnPlayerPositioXYChanged(Vector2I position)
     {
+        
         Vector2I chunkPos = GetChunkGlobalPositionFromBlockGlobalPosition(position);
         if (_middleChunkPos != chunkPos)
         {
@@ -78,7 +79,6 @@ public partial class VoxelWorld : Node
 
     public ChunkStaticBody GenerateChunkBodyUsingThreads(Vector2I chunkPosition)
     {
-        
         ChunkResource chunkResource = ChunksResources[chunkPosition];
 
         Task<Shape3D> colisionTask = Task<Shape3D>.Factory.StartNew(() => 
@@ -106,6 +106,10 @@ public partial class VoxelWorld : Node
         {
             Vector3I subPosition = blockGlobalPosition - new Vector3I(chunkPosition.X, 0, chunkPosition.Y) * ChunkDataGenerator.CHUNK_SIZE;
             return chunkResource.Data[subPosition.X, subPosition.Y, subPosition.Z];
+        }
+        if(_chunkUpdater.CurrentRenderDistanse < RenderDistance - 2)
+        {
+            throw new Exception("Not exist resourse near your chunk to draw!.");
         }
         return ChunkDataGenerator.BlockTypes.CobbleStone;
     }
