@@ -5,8 +5,6 @@ extends Node
 @onready var timer:Timer = $SaveTimer
 
 
-
-
 func _ready():
 	timer.timeout.connect(_on_save_timer_timeout)
 	timer.start()

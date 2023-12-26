@@ -2,20 +2,13 @@
 
 [ext_resource type="Script" path="res://player/player.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://b4tnsxv70xmon" path="res://textures/texture_sheet.png" id="2"]
+[ext_resource type="CameraAttributesPhysical" uid="uid://c1wrkpjil7w6a" path="res://camera_attributes/camera_attr.tres" id="2_obqjj"]
 [ext_resource type="Material" uid="uid://dyai1tpr3e0pn" path="res://textures/new_orm_material_3d.tres" id="3_yjovy"]
 [ext_resource type="ArrayMesh" path="res://meshes/outline_mesh.tres" id="4_p171e"]
 
 [sub_resource type="CylinderShape3D" id="1"]
 height = 1.75
 radius = 0.375
-
-[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_sbw07"]
-auto_exposure_enabled = true
-auto_exposure_scale = 0.25
-auto_exposure_speed = 0.4
-frustum_focal_length = 15.04
-auto_exposure_min_exposure_value = -1.0
-auto_exposure_max_exposure_value = 5.0
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jsx4i"]
 frequency = 0.003
@@ -41,7 +34,7 @@ shape = SubResource("1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
-attributes = SubResource("CameraAttributesPhysical_sbw07")
+attributes = ExtResource("2_obqjj")
 
 [node name="RayCast3D" type="RayCast3D" parent="Head"]
 target_position = Vector3(0, 0, -4)
