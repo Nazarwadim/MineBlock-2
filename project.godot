@@ -76,7 +76,7 @@ use_flashlight={
 
 [physics]
 
-common/physics_ticks_per_second=25
+common/physics_ticks_per_second=30
 3d/physics_engine="JoltPhysics3D"
 3d/default_gravity=10.8
 

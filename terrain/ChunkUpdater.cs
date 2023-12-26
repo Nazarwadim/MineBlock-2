@@ -239,7 +239,7 @@ public partial class ChunkUpdater : Node
             }
         }
     }
-    private void _UpdateChunkBodies()
+    public void _UpdateChunkBodies()
     {
         _updatingChunksQueue = true;
         while (_ChangedChunksToUpdate.Count > 0)
@@ -247,16 +247,19 @@ public partial class ChunkUpdater : Node
             _mtxUpdateQueue.WaitOne();
             Generic.KeyValuePair<ChunkResource, ChunkStaticBody> chunkPair = _ChangedChunksToUpdate.Dequeue();
             _mtxUpdateQueue.ReleaseMutex();
-            System.Threading.Tasks.Task<Shape3D> colisionTask = System.Threading.Tasks.Task<Shape3D>.Factory.StartNew(() =>
-                ChunksShapeGenerator.GenerateChunkShape(chunkPair.Key, _voxelWorld));
-            Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkPair.Key, _voxelWorld);
-            System.Threading.Tasks.Task.WaitAll(colisionTask);
-            Shape3D shape = colisionTask.Result;
-            CallThreadSafe("_SetChunkBodyMeshAndShape", chunkPair.Value, mesh, shape);
+            ThreadPool.QueueUserWorkItem((object obj) => _UpdateChunkBody(chunkPair.Value, chunkPair.Key));
         }
         _updatingChunksQueue = false;
     }
-
+    private void _UpdateChunkBody(ChunkStaticBody chunkStaticBody, ChunkResource chunkResource)
+    {
+        System.Threading.Tasks.Task<Shape3D> colisionTask = System.Threading.Tasks.Task<Shape3D>.Factory.StartNew(() =>
+                ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld));
+        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
+        System.Threading.Tasks.Task.WaitAll(colisionTask);
+        Shape3D shape = colisionTask.Result;
+        CallDeferred("_SetChunkBodyMeshAndShape", chunkStaticBody, mesh, shape);
+    }
     private void _SetChunkBodyMeshAndShape(ChunkStaticBody chunkStaticBody, Mesh mesh, Shape3D shape3D)
     {
         chunkStaticBody.MeshInstance.Mesh = mesh;

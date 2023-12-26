@@ -120,43 +120,30 @@ public partial class VoxelWorld : Node
         Vector3I subPosition = blockGlobalPosition - new Vector3I(chunkPosition.X, 0, chunkPosition.Y) * ChunkDataGenerator.CHUNK_SIZE;
         chunkResource.Data[subPosition.X, subPosition.Y, subPosition.Z] = blockType;
         _chunkUpdater.UpdateChunkBody(chunkPosition);
-        if(subPosition.X  == 0 && subPosition.Z == ChunkDataGenerator.CHUNK_SIZE-1)
-        {
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y + 1));
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X - 1, chunkPosition.Y));
-        }
-        if(subPosition.X  == ChunkDataGenerator.CHUNK_SIZE-1 && subPosition.Z == 0)
-        {
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X + 1, chunkPosition.Y));
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y - 1));
-        }
-        if(subPosition.X  == 0 && subPosition.Z == 0)
+        if(subPosition.X == 0)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X - 1, chunkPosition.Y));
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y - 1));
+            GD.Print("о");
         }
-        else if(subPosition.X == ChunkDataGenerator.CHUNK_SIZE-1 && subPosition.Z == ChunkDataGenerator.CHUNK_SIZE-1)
+        if(subPosition.X == ChunkDataGenerator.CHUNK_SIZE -1)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X + 1, chunkPosition.Y));
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y + 1));
-        }
-        else if(subPosition.X == 0)
-        {
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X - 1, chunkPosition.Y));
-        }
-        else if(subPosition.X == ChunkDataGenerator.CHUNK_SIZE -1)
-        {
-            _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X + 1, chunkPosition.Y));
+            GD.Print("о");
         }
 
-        else if(subPosition.Z == 0)
+        if(subPosition.Z == 0)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X , chunkPosition.Y - 1));
+           GD.Print("И"); 
         }
-        else if(subPosition.Z == ChunkDataGenerator.CHUNK_SIZE - 1)
+        if(subPosition.Z == ChunkDataGenerator.CHUNK_SIZE - 1)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y + 1));
+            GD.Print("И");
         }
+        ulong start = Time.GetTicksUsec();
+        _chunkUpdater._UpdateChunkBodies();
+        GD.Print(Time.GetTicksUsec() - start);
         
     }
     public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)

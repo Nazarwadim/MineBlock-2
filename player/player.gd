@@ -67,13 +67,12 @@ func _physics_process(delta):
 		$BlockToPlaseArea.visible = true
 		if Input.is_action_just_pressed("remove_block"):
 			_voxel_world.SetBlockTypeInGlobalPosition(block_pos_watch, 0)
-			
 		if Input.is_action_just_pressed("place_block"):
 			if block_pos_set.y < 255 && block_pos_set.y >= 0:
 				if block_pos_set != _block_pos_set_before:
 					await get_tree().create_timer(delta + 0.01).timeout
 				if not $BlockToPlaseArea.overlaps_body(self):
-					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 13)
+					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 24)
 			else :
 				printerr("You've gone beyond the height limit")
 		_block_pos_set_before = block_pos_set
