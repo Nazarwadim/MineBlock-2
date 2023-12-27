@@ -7,19 +7,17 @@ using ChunkBodyGeneration;
 using ChunksSerealisation;
 
 using Generic = System.Collections.Generic;
+
+[GlobalClass]
 public partial class ChunkUpdater : Node
 {
     [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
     public int CurrentRenderDistanse { get; private set; }
-    public ChunkUpdater(VoxelWorld world, Vector2I midleChunkPos = new Vector2I())
+    public ChunkUpdater()
     {
-        _voxelWorld = world;
         _mtxDic = new();
         _ChangedChunksToSave = new();
-        
     }
-    
-
     private VoxelWorld _voxelWorld;
     
     private Vector2I _middleChunkPos = new();
@@ -29,10 +27,13 @@ public partial class ChunkUpdater : Node
     private System.Threading.Mutex _mtxDic;
     public bool IsUpdatingChunks { get; private set; }
     private readonly Generic.Queue<ChunkResource> _ChangedChunksToSave;
-    private const string NAME = "ChunkUpdater";
     public override void _Ready()
     {
-        Name = NAME;
+        _voxelWorld = GetParent() as VoxelWorld;
+        if(_voxelWorld == null)
+        {
+            GD.Print("Can`t create ChunkUpdater when parent isn`t VoxelWorld!!! ChunkUpdater.cs Ready()");
+        }
         _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
         _UpdateChunks();
     }

@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=9 format=3 uid="uid://cft5uj8g6a10"]
 
 [ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
+[ext_resource type="Script" path="res://terrain/ChunkUpdater.cs" id="3_1pd3j"]
 [ext_resource type="Texture2D" uid="uid://bh6p41nk43blv" path="res://textures/Epic_BlueSunset_EquiRect_flat.png" id="3_6qnuv"]
 [ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_lr1jj"]
 
@@ -30,13 +31,17 @@ volumetric_fog_temporal_reprojection_amount = 0.8
 [node name="Game" type="Node"]
 script = ExtResource("1_m12kp")
 
-[node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "GenerationRelativePoint")]
+[node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "_generationRelativePlayer", "_chunkUpdater")]
 script = ExtResource("2_yr4dd")
 Seed = 1
 RenderDistance = 3
 _worldEnvironment = NodePath("../WorldEnvironment")
-GenerationRelativePoint = NodePath("../Player")
+_generationRelativePlayer = NodePath("../Player")
+_chunkUpdater = NodePath("ChunkUpdater")
 IsSerialization = true
+
+[node name="ChunkUpdater" type="Node" parent="VoxelWorld"]
+script = ExtResource("3_1pd3j")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_60wp7")

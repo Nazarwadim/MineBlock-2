@@ -20,33 +20,38 @@ public partial class VoxelWorld : Node
     [Export] ulong Seed;
     [Export] public int RenderDistance = 10;
     [Export] private WorldEnvironment _worldEnvironment;
-    [Export] private Node3D GenerationRelativePoint;
+    [Export] private Node3D _generationRelativePlayer;
+    [Export]private ChunkUpdater _chunkUpdater;
     [Export] public bool IsSerialization;
+    
     
     public readonly Dictionary<Vector2I, ChunkResource> ChunksResources;
     public readonly Dictionary<Vector2I, ChunkStaticBody> ChunksBodies;
     
-    private ChunkUpdater _chunkUpdater;
+    
     private Vector2I _middleChunkPos;
     public override void _Ready()
     {
-        if(GenerationRelativePoint == null)
+        if(_generationRelativePlayer == null)
         {
-            GD.PrintErr("Set node3d from set a point from which the generation will start");
+            GD.PrintErr("Set base player! VoxelWorld.cs Ready()");
             GetTree().Quit();
         }
         if(_worldEnvironment == null)
         {
-            GD.PrintErr("Set world environment!!!! VoxelWorld.cs line 33");
+            GD.PrintErr("Set world environment!!!! VoxelWorld.cs Ready()");
             GetTree().Quit();
         }
-        
+        if(_chunkUpdater == null)
+        {
+            GD.PrintErr("Set ChunkUpdater!!!! VoxelWorld.cs Ready()");
+            GetTree().Quit();
+        }
+
         ChunkDataGenerator.Seed = Seed;
-        _chunkUpdater = new ChunkUpdater(this);
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
-        Signal signal = (Signal)GenerationRelativePoint.Call("get_position_XY_changed");
-        GD.Print( GenerationRelativePoint.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged)));
-        AddChild(_chunkUpdater);
+        Signal signal = (Signal)_generationRelativePlayer.Call("get_position_XY_changed");
+        _generationRelativePlayer.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged));
     }
     private void _OnCurrentRenderDistanceChanged(int renderDistance)
     {
