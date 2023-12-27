@@ -3,6 +3,7 @@ using Godot;
 using ProcedureGeneration;
 
 using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
+
 namespace ChunkBodyGeneration
 {
     public partial class ChunksMeshGenerator : GodotObject
@@ -20,7 +21,7 @@ namespace ChunkBodyGeneration
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunkResource.Data;
             if (mainDataChunk.Length == 0)
             {
-                throw new Exception("No elements in array ChunksMeshGenerator.cs 21");
+                throw new Exception("No elements in array ChunksMeshGenerator.cs ");
             }
 
             bool existsSideChunks = true;
