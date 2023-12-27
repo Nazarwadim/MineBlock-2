@@ -262,7 +262,7 @@ public partial class ChunkUpdater : Node
     }
     private void _SetChunkBodyMeshAndShape(ChunkStaticBody chunkStaticBody, Mesh mesh, Shape3D shape3D)
     {
-        chunkStaticBody.MeshInstance.Mesh = mesh;
+        chunkStaticBody.SetNewMesh(mesh);
         chunkStaticBody.ColisionShape.Shape = shape3D;
     }
 

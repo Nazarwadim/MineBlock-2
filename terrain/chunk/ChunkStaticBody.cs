@@ -3,8 +3,8 @@ using Godot;
 
 public partial class ChunkStaticBody : StaticBody3D
 {
-    [Export]public MeshInstance3D MeshInstance{get;set;}
-    [Export]public CollisionShape3D ColisionShape{get;set;}
+    public MeshInstance3D MeshInstance{get;set;}
+    public CollisionShape3D ColisionShape{get;set;}
 
     private static readonly Material _MATERIAL_OVERRIDE  = GD.Load<Material>("res://textures/material.tres");
     public ChunkStaticBody(Mesh mesh, Shape3D shape, Vector3 position) : this(mesh,position)
@@ -14,6 +14,18 @@ public partial class ChunkStaticBody : StaticBody3D
             Shape = shape
         };
 
+    }
+
+    public void SetNewMesh(Mesh mesh)
+    {
+        MeshInstance.QueueFree();
+        MeshInstance = new()
+        {
+            Mesh = mesh,
+            CastShadow = GeometryInstance3D.ShadowCastingSetting.DoubleSided,
+            MaterialOverride = _MATERIAL_OVERRIDE
+        };
+        AddChild(MeshInstance);
     }
 
     public ChunkStaticBody(MeshInstance3D meshInstance3D, CollisionShape3D collisionShape3Dshape, Vector3 position)
