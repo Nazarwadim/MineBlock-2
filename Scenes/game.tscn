@@ -1,32 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=6 format=3 uid="uid://cft5uj8g6a10"]
 
 [ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
 [ext_resource type="Script" path="res://terrain/ChunkUpdater.cs" id="3_1pd3j"]
-[ext_resource type="Texture2D" uid="uid://bh6p41nk43blv" path="res://textures/Epic_BlueSunset_EquiRect_flat.png" id="3_6qnuv"]
+[ext_resource type="Environment" uid="uid://bp1x2t1tkv70j" path="res://environments/game.tres" id="4_6g0yj"]
 [ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_lr1jj"]
-
-[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_65rho"]
-panorama = ExtResource("3_6qnuv")
-
-[sub_resource type="Sky" id="Sky_u6213"]
-sky_material = SubResource("PanoramaSkyMaterial_65rho")
-
-[sub_resource type="Environment" id="Environment_60wp7"]
-background_mode = 2
-background_energy_multiplier = 0.25
-sky = SubResource("Sky_u6213")
-sky_rotation = Vector3(0, 0.20944, 0)
-tonemap_mode = 2
-sdfgi_enabled = true
-sdfgi_min_cell_size = 1.0
-glow_enabled = true
-fog_light_energy = 1.34
-fog_sky_affect = 0.316
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.004
-volumetric_fog_length = 300.0
-volumetric_fog_temporal_reprojection_amount = 0.8
 
 [node name="Game" type="Node"]
 script = ExtResource("1_m12kp")
@@ -34,7 +12,6 @@ script = ExtResource("1_m12kp")
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "_generationRelativePlayer", "_chunkUpdater")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 3
 _worldEnvironment = NodePath("../WorldEnvironment")
 _generationRelativePlayer = NodePath("../Player")
 _chunkUpdater = NodePath("ChunkUpdater")
@@ -44,7 +21,7 @@ IsSerialization = true
 script = ExtResource("3_1pd3j")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_60wp7")
+environment = ExtResource("4_6g0yj")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="WorldEnvironment"]
 transform = Transform3D(0.976672, -0.107368, 0.185966, 0, 0.866026, 0.5, -0.214735, -0.488336, 0.845823, -0.0205836, 0, -0.0831834)
@@ -52,6 +29,7 @@ light_bake_mode = 1
 shadow_enabled = true
 shadow_bias = 0.025
 shadow_normal_bias = 2.084
+shadow_reverse_cull_face = true
 directional_shadow_fade_start = 1.0
 directional_shadow_max_distance = 676.3
 
