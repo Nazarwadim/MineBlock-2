@@ -18,10 +18,9 @@ public partial class VoxelWorld : Node
         _middleChunkPos = new Vector2I();
     }
     [Export] ulong Seed;
-    [Export] public int PhisicsRenderDistance = 10;
     [Export] public int RenderDistance = 10;
     [Export] private WorldEnvironment _worldEnvironment;
-    [Export] public Node3D GenerationRelativePoint;
+    [Export] private Node3D GenerationRelativePoint;
     [Export] public bool IsSerialization;
     
     public readonly Dictionary<Vector2I, ChunkResource> ChunksResources;
@@ -75,25 +74,6 @@ public partial class VoxelWorld : Node
     {
         if(IsSerialization) _chunkUpdater.SaveChangedChunks();
         else throw new Exception("Trying to save chunks, when it doesn`t allowed. Set IsSerialization var to true!");
-    }
-
-    public ChunkStaticBody GenerateChunkBodyUsingThreads(Vector2I chunkPosition)
-    {
-        ChunkResource chunkResource = ChunksResources[chunkPosition];
-
-        Task<Shape3D> colisionTask = Task<Shape3D>.Factory.StartNew(() => 
-            ChunksShapeGenerator.GenerateChunkShape(chunkResource,this));
-
-        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource,this);
-        Task.WaitAll(colisionTask);
-
-        ChunkStaticBody chunkBody = new ChunkStaticBody(
-            mesh,
-            colisionTask.Result,
-            new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)
-        );
-        
-        return chunkBody;
     }
     // Summary:
     //      This get you block type (Block.Type enum) from block global position.

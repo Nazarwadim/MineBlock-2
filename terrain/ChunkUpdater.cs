@@ -9,7 +9,6 @@ using ChunksSerealisation;
 using Generic = System.Collections.Generic;
 public partial class ChunkUpdater : Node
 {
-
     [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
     public int CurrentRenderDistanse { get; private set; }
     public ChunkUpdater(Dictionary<Vector2I, ChunkResource> chunksResources, Dictionary<Vector2I, ChunkStaticBody> chunksBodies, VoxelWorld world)
@@ -29,7 +28,7 @@ public partial class ChunkUpdater : Node
     private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
 
     private VoxelWorld _voxelWorld;
-
+    
     private Vector2I _middleChunkPos = new();
     private bool _exitLoops;
     private Thread _thread1;
@@ -37,8 +36,10 @@ public partial class ChunkUpdater : Node
     private System.Threading.Mutex _mtxDic;
     public bool IsUpdatingChunks { get; private set; }
     private readonly Generic.Queue<ChunkResource> _ChangedChunksToSave;
+    private const string NAME = "ChunkUpdater";
     public override void _Ready()
     {
+        Name = NAME;
         _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
         _UpdateChunks();
     }
@@ -158,7 +159,6 @@ public partial class ChunkUpdater : Node
     //  Check if can generate mesh
     // Returns:
     //     Whether or not generated.
-
     private bool _TryGenerateChunkResource(Vector2I chunkPosition)
     {
         if (_chunksResources.ContainsKey(chunkPosition)) return false;
@@ -196,8 +196,8 @@ public partial class ChunkUpdater : Node
         {
             return false;
         }
-        ChunkStaticBody chunk = _voxelWorld.GenerateChunkBodyUsingThreads(pos);
-        CallDeferred("add_child", chunk);
+        ChunkStaticBody chunk = _GenerateChunkBody(pos);
+        _voxelWorld.CallDeferred("add_child", chunk);
         _mtxDic.WaitOne();
         _chunksBodies.Add(pos, chunk);
         _mtxDic.ReleaseMutex();
@@ -226,6 +226,21 @@ public partial class ChunkUpdater : Node
         Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
         Shape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
         CallDeferred(MethodName._SetChunkBodyMeshAndShape, chunkStaticBody, mesh, shape);
+    }
+    private ChunkStaticBody _GenerateChunkBody(Vector2I chunkPosition)
+    {
+        ChunkResource chunkResource = _chunksResources[chunkPosition];        
+        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
+        Shape3D shape3D = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
+        
+
+        ChunkStaticBody chunkBody = new ChunkStaticBody(
+            mesh,
+            shape3D,
+            new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)
+        );
+        
+        return chunkBody;
     }
     private void _SetChunkBodyMeshAndShape(ChunkStaticBody chunkStaticBody, Mesh mesh, Shape3D shape3D)
     {
