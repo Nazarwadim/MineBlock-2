@@ -33,7 +33,6 @@ script = ExtResource("1_m12kp")
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "GenerationRelativePoint")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 30
 _worldEnvironment = NodePath("../WorldEnvironment")
 GenerationRelativePoint = NodePath("../Player")
 IsSerialization = true

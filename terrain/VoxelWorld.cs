@@ -42,7 +42,7 @@ public partial class VoxelWorld : Node
         }
         
         ChunkDataGenerator.Seed = Seed;
-        _chunkUpdater = new ChunkUpdater(ChunksResources, ChunksBodies, this);
+        _chunkUpdater = new ChunkUpdater(this);
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         Signal signal = (Signal)GenerationRelativePoint.Call("get_position_XY_changed");
         //GenerationRelativePoint.Call("connect")

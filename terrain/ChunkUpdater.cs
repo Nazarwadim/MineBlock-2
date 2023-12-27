@@ -11,21 +11,14 @@ public partial class ChunkUpdater : Node
 {
     [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
     public int CurrentRenderDistanse { get; private set; }
-    public ChunkUpdater(Dictionary<Vector2I, ChunkResource> chunksResources, Dictionary<Vector2I, ChunkStaticBody> chunksBodies, VoxelWorld world)
+    public ChunkUpdater(VoxelWorld world, Vector2I midleChunkPos = new Vector2I())
     {
         _voxelWorld = world;
-        _chunksResources = chunksResources;
-        _chunksBodies = chunksBodies;
         _mtxDic = new();
         _ChangedChunksToSave = new();
         
     }
-    public ChunkUpdater(Dictionary<Vector2I, ChunkResource> chunksResources, Dictionary<Vector2I, ChunkStaticBody> chunksBodies, VoxelWorld world, Vector2I midleChunkPos) : this(chunksResources, chunksBodies, world)
-    {
-        _middleChunkPos = midleChunkPos;
-    }
-    private Dictionary<Vector2I, ChunkResource> _chunksResources;
-    private Dictionary<Vector2I, ChunkStaticBody> _chunksBodies;
+    
 
     private VoxelWorld _voxelWorld;
     
@@ -161,7 +154,7 @@ public partial class ChunkUpdater : Node
     //     Whether or not generated.
     private bool _TryGenerateChunkResource(Vector2I chunkPosition)
     {
-        if (_chunksResources.ContainsKey(chunkPosition)) return false;
+        if (_voxelWorld.ChunksResources.ContainsKey(chunkPosition)) return false;
         ChunkResource chunkResource = null;
         if (_voxelWorld.IsSerialization)
         {
@@ -174,7 +167,7 @@ public partial class ChunkUpdater : Node
         }
         if (chunkResource != null)
         {
-            _chunksResources.Add(chunkPosition, chunkResource);
+            _voxelWorld.ChunksResources.Add(chunkPosition, chunkResource);
             if (_DistanceSquaredFromToVector2I(chunkPosition, _middleChunkPos) < _voxelWorld.RenderDistance)
             {
                 if (!_ChangedChunksToSave.Contains(chunkResource))
@@ -192,14 +185,14 @@ public partial class ChunkUpdater : Node
 
     private bool _TryGenerateChunkBody(Vector2I pos)
     {
-        if (_chunksBodies.ContainsKey(pos))
+        if (_voxelWorld.ChunksBodies.ContainsKey(pos))
         {
             return false;
         }
         ChunkStaticBody chunk = _GenerateChunkBody(pos);
         _voxelWorld.CallDeferred("add_child", chunk);
         _mtxDic.WaitOne();
-        _chunksBodies.Add(pos, chunk);
+        _voxelWorld.ChunksBodies.Add(pos, chunk);
         _mtxDic.ReleaseMutex();
         return true;
     }
@@ -208,8 +201,8 @@ public partial class ChunkUpdater : Node
     {
 
         _mtxDic.WaitOne();
-        ChunkResource chunkResource = _chunksResources[chunkPos];
-        ChunkStaticBody chunkStaticBody = _chunksBodies[chunkPos];
+        ChunkResource chunkResource = _voxelWorld.ChunksResources[chunkPos];
+        ChunkStaticBody chunkStaticBody = _voxelWorld.ChunksBodies[chunkPos];
         _mtxDic.ReleaseMutex();
         ThreadPool.QueueUserWorkItem((object obj) => _UpdateChunkBody(chunkStaticBody, chunkResource));
         GD.Print(ThreadPool.ThreadCount);
@@ -229,7 +222,7 @@ public partial class ChunkUpdater : Node
     }
     private ChunkStaticBody _GenerateChunkBody(Vector2I chunkPosition)
     {
-        ChunkResource chunkResource = _chunksResources[chunkPosition];        
+        ChunkResource chunkResource = _voxelWorld.ChunksResources[chunkPosition];        
         Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
         Shape3D shape3D = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
         
@@ -250,25 +243,25 @@ public partial class ChunkUpdater : Node
 
     private void _RemoveChunkBody(Vector2I chunkPosition)
     {
-        _chunksBodies[chunkPosition].CallDeferred("queue_free");
-        _chunksBodies.Remove(chunkPosition);
+        _voxelWorld.ChunksBodies[chunkPosition].CallDeferred("queue_free");
+        _voxelWorld.ChunksBodies.Remove(chunkPosition);
     }
 
     private void _RemoveFarChunksResources()
     {
 
-        foreach (Vector2I chunkPosition in _chunksResources.Keys)
+        foreach (Vector2I chunkPosition in _voxelWorld.ChunksResources.Keys)
         {
             if (_DistanceSquaredFromToVector2I(chunkPosition, _middleChunkPos) > 25 * _voxelWorld.RenderDistance * _voxelWorld.RenderDistance)
             {
-                _chunksResources.Remove(chunkPosition);
+                _voxelWorld.ChunksResources.Remove(chunkPosition);
             }
         }
     }
 
     private void _RemoveFarChunksBodies()
     {
-        foreach (Vector2I chunkPosition in _chunksBodies.Keys)
+        foreach (Vector2I chunkPosition in _voxelWorld.ChunksBodies.Keys)
         {
             if (_DistanceSquaredFromToVector2I(chunkPosition, _middleChunkPos) > _voxelWorld.RenderDistance * _voxelWorld.RenderDistance)
             {

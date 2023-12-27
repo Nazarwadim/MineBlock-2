@@ -5,7 +5,7 @@ using ProcedureGeneration;
 using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
 namespace ChunkBodyGeneration
 {
-    public static class ChunksMeshGenerator
+    public partial class ChunksMeshGenerator : GodotObject
     {
         public static ulong coutnerTemp = 0;
         const int TEXTURE_SHEET_WIDTH = 8;
@@ -508,3 +508,4 @@ namespace ChunkBodyGeneration
         }
     }
 }
+

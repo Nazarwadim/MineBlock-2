@@ -9,7 +9,7 @@ using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
 namespace ChunkBodyGeneration
 {
     
-    public static class ChunksShapeGenerator
+    public partial class ChunksShapeGenerator : GodotObject
     {
         public const short CHUNK_SIZE = ChunkDataGenerator.CHUNK_SIZE;
         public const short CHUNK_HEIGHT = ChunkDataGenerator.CHUNK_HEIGHT;

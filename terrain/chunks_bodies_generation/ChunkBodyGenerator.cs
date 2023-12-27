@@ -4,7 +4,7 @@ using ProcedureGeneration;
 
 namespace ChunkBodyGeneration
 {
-	public static class ChunksBodyGenerator
+	public partial class ChunksBodyGenerator : GodotObject
 	{
 		//Dont Add or remove elements, this will couse serious error!
 		public enum BlockSide
