@@ -41,9 +41,7 @@ func _set_deafult_rotation_for_areas():
 	$BlockToPlaseArea.rotation = Vector3(0,0,0)
 	$BlockToRemoveArea.rotation = Vector3(0,0,0)
 
-func _exit_tree():
-	if is_serialisatable:
-		save()	
+
 		
 func save():
 	var transform_bynary = var_to_bytes(transform)
@@ -72,7 +70,7 @@ func _physics_process(delta):
 				if block_pos_set != _block_pos_set_before:
 					await get_tree().create_timer(delta + 0.01).timeout
 				if not $BlockToPlaseArea.overlaps_body(self):
-					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 24)
+					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 12)
 			else :
 				printerr("You've gone beyond the height limit")
 		_block_pos_set_before = block_pos_set
