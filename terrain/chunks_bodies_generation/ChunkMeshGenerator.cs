@@ -432,7 +432,7 @@ namespace ChunkBodyGeneration
                     bottom_uvs = top_uvs;
                     break;
                 case ChunkDataGenerator.BlockTypes.Log:
-                    top_uvs = CalculateBlockUvs(31);
+                    top_uvs = CalculateBlockUvs(30);
                     bottom_uvs = top_uvs;
                     break;
                 case ChunkDataGenerator.BlockTypes.BookShelf:

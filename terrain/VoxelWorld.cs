@@ -123,23 +123,19 @@ public partial class VoxelWorld : Node
         if(subPosition.X == 0)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X - 1, chunkPosition.Y));
-            GD.Print("о");
         }
         if(subPosition.X == ChunkDataGenerator.CHUNK_SIZE -1)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X + 1, chunkPosition.Y));
-            GD.Print("о");
         }
 
         if(subPosition.Z == 0)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X , chunkPosition.Y - 1));
-           GD.Print("И"); 
         }
         if(subPosition.Z == ChunkDataGenerator.CHUNK_SIZE - 1)
         {
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y + 1));
-            GD.Print("И");
         }
     }
     public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)

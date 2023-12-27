@@ -45,7 +45,7 @@ transform = Transform3D(1, 0, 0, 0, 0.98634, 0.164721, 0, -0.164721, 0.98634, 0,
 light_projector = SubResource("NoiseTexture2D_5fmwv")
 shadow_enabled = true
 shadow_opacity = 0.33
-spot_range = 15.0
+spot_range = 25.0
 spot_angle = 40.95
 
 [node name="SelectedBlock" type="TextureRect" parent="."]
