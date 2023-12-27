@@ -18,9 +18,8 @@ public partial class ChunkUpdater : Node
         _chunksResources = chunksResources;
         _chunksBodies = chunksBodies;
         _mtxDic = new();
-        _mtxUpdateQueue = new();
         _ChangedChunksToSave = new();
-        _ChangedChunksToUpdate = new();
+        
     }
     public ChunkUpdater(Dictionary<Vector2I, ChunkResource> chunksResources, Dictionary<Vector2I, ChunkStaticBody> chunksBodies, VoxelWorld world, Vector2I midleChunkPos) : this(chunksResources, chunksBodies, world)
     {
@@ -36,23 +35,12 @@ public partial class ChunkUpdater : Node
     private Thread _thread1;
     private bool _updatingChunksQueue = false;
     private System.Threading.Mutex _mtxDic;
-    private System.Threading.Mutex _mtxUpdateQueue;
     public bool IsUpdatingChunks { get; private set; }
     private readonly Generic.Queue<ChunkResource> _ChangedChunksToSave;
-    private readonly Generic.Queue<Generic.KeyValuePair<ChunkResource, ChunkStaticBody>> _ChangedChunksToUpdate;
     public override void _Ready()
     {
         _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
         _UpdateChunks();
-    }
-
-    public override void _PhysicsProcess(double delta)
-    {
-        if (_ChangedChunksToUpdate.Count > 0 && !_updatingChunksQueue)
-        {
-            Thread thread = new Thread(_UpdateChunkBodies);
-            thread.Start();
-        }
     }
 
     private void _OnMidleChunkPositionChanged(Vector2I chunk_position)
@@ -223,14 +211,8 @@ public partial class ChunkUpdater : Node
         ChunkResource chunkResource = _chunksResources[chunkPos];
         ChunkStaticBody chunkStaticBody = _chunksBodies[chunkPos];
         _mtxDic.ReleaseMutex();
-
-        var chunkPair = new Generic.KeyValuePair<ChunkResource, ChunkStaticBody>(chunkResource, chunkStaticBody);
-        _mtxUpdateQueue.WaitOne();
-        if (!_ChangedChunksToUpdate.Contains(chunkPair))
-        {
-            _ChangedChunksToUpdate.Enqueue(chunkPair);
-        }
-        _mtxUpdateQueue.ReleaseMutex();
+        ThreadPool.QueueUserWorkItem((object obj) => _UpdateChunkBody(chunkStaticBody, chunkResource));
+        GD.Print(ThreadPool.ThreadCount);
         if (_voxelWorld.IsSerialization)
         {
             if (!_ChangedChunksToSave.Contains(chunkResource))
@@ -239,26 +221,11 @@ public partial class ChunkUpdater : Node
             }
         }
     }
-    public void _UpdateChunkBodies()
-    {
-        _updatingChunksQueue = true;
-        while (_ChangedChunksToUpdate.Count > 0)
-        {
-            _mtxUpdateQueue.WaitOne();
-            Generic.KeyValuePair<ChunkResource, ChunkStaticBody> chunkPair = _ChangedChunksToUpdate.Dequeue();
-            _mtxUpdateQueue.ReleaseMutex();
-            ThreadPool.QueueUserWorkItem((object obj) => _UpdateChunkBody(chunkPair.Value, chunkPair.Key));
-        }
-        _updatingChunksQueue = false;
-    }
     private void _UpdateChunkBody(ChunkStaticBody chunkStaticBody, ChunkResource chunkResource)
     {
-        System.Threading.Tasks.Task<Shape3D> colisionTask = System.Threading.Tasks.Task<Shape3D>.Factory.StartNew(() =>
-                ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld));
         Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
-        System.Threading.Tasks.Task.WaitAll(colisionTask);
-        Shape3D shape = colisionTask.Result;
-        CallDeferred("_SetChunkBodyMeshAndShape", chunkStaticBody, mesh, shape);
+        Shape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
+        CallDeferred(MethodName._SetChunkBodyMeshAndShape, chunkStaticBody, mesh, shape);
     }
     private void _SetChunkBodyMeshAndShape(ChunkStaticBody chunkStaticBody, Mesh mesh, Shape3D shape3D)
     {

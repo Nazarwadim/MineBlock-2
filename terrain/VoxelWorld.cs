@@ -141,10 +141,6 @@ public partial class VoxelWorld : Node
             _chunkUpdater.UpdateChunkBody(new Vector2I(chunkPosition.X, chunkPosition.Y + 1));
             GD.Print("И");
         }
-        ulong start = Time.GetTicksUsec();
-        _chunkUpdater._UpdateChunkBodies();
-        GD.Print(Time.GetTicksUsec() - start);
-        
     }
     public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
     {
