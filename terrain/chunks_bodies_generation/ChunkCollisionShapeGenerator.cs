@@ -52,6 +52,7 @@ namespace ChunkBodyGeneration
             _GenerateInsideChunkSurfaceTool(points, mainDataChunk);            
             _GenerateUpDownYSurfaceTool(points,chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             _GenerateChunkSidesSurfaceTool(points, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
+            
             ConcavePolygonShape3D concavePolygonShape3D = new()
             {
                 Data = points.ToArray()
@@ -75,7 +76,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[i, j, k - 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[i, j, k + 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[i - 1, j, k]);
@@ -83,19 +83,10 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[i, j - 1, k]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[i, j + 1, k]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)i, (int)j, (int)k), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-
-                        _BuildBlockColision(pointsData, new Vector3I((int)i, (int)j, (int)k), neighbourBlocksArePhisics);
 
                     }
                 }
@@ -127,27 +118,16 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, z + 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(mainDataChunk[x - 1, y, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
-
                     }
                 }
 
@@ -161,7 +141,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(mainDataChunk[x, y, z - 1]);
                         neighbourBlocksArePhisics[(int)BlockSides.Back] = IsBlockNotCollide(mainDataChunk[x, y, z + 1]);
 
@@ -180,19 +159,10 @@ namespace ChunkBodyGeneration
 
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                     }
                 }
                 for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
@@ -204,7 +174,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         if (z == 0)
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
@@ -220,19 +189,10 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                     }
                 }
                 for (long x = 0; x < CHUNK_SIZE; x += CHUNK_SIZE - 1)
@@ -244,7 +204,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         if (x == 0)
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
@@ -271,19 +230,10 @@ namespace ChunkBodyGeneration
 
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z),  neighbourBlocksArePhisics);
                     }
                 }
             }
@@ -312,8 +262,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        
-                        long counter = 0;
                         if (i == 0)
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Front] = IsBlockNotCollide(
@@ -333,20 +281,10 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[x, y - 1, i]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + 1, i]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)i), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)i),  neighbourBlocksArePhisics);
-
-
                     }
                 }
 
@@ -360,7 +298,6 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
                         if (i == 0)
                         {
                             
@@ -380,19 +317,10 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[i, y - 1, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[i, y + 1, z]);
 
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)i, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-                        
-                        _BuildBlockColision(pointsData, new Vector3I((int)i, (int)y, (int)z),  neighbourBlocksArePhisics);
                         
                     }
                 }
@@ -409,7 +337,7 @@ namespace ChunkBodyGeneration
                         {
                             continue;
                         }
-                        long counter = 0;
+                    
                         if (x == 0)
                         {
                             neighbourBlocksArePhisics[(int)BlockSides.Left] = IsBlockNotCollide(
@@ -437,20 +365,10 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[x, y - 1, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + 1, z]);
 
-
-
-                        foreach (bool item in neighbourBlocksArePhisics)
+                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
-                            if (item)
-                            {
-                                ++counter;
-                            }
+                            _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
-                        if (counter == 0)
-                        {
-                            continue;
-                        }
-                        _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z),  neighbourBlocksArePhisics);
                     }
                 }
             }
