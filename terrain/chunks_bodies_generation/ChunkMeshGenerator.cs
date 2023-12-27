@@ -106,7 +106,6 @@ namespace ChunkBodyGeneration
         private static void _GenerateUpDownYSurfaceTool(SurfaceTool surfaceTool, ChunkResource chunk,
             ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
-            Vector3I chunkPosition = new(chunk.Position.X, 0, chunk.Position.Y);
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunk.Data;
 
             ChunkDataGenerator.BlockTypes[,,] leftDataChunk = chunkLeft.Data;
@@ -261,7 +260,6 @@ namespace ChunkBodyGeneration
             ChunkDataGenerator.BlockTypes[,,] downDataChunk = chunkDown.Data;
             ChunkDataGenerator.BlockTypes[,,] upDataChunk = chunkUp.Data;
 
-            Vector3I chunkPositionGlobal = new(chunk.Position.X * CHUNK_SIZE, 0, chunk.Position.Y * CHUNK_SIZE);
             for (long i = 0; i < CHUNK_SIZE; i += CHUNK_SIZE - 1)
             {
                 for (long x = 1; x < CHUNK_SIZE - 1; ++x)
