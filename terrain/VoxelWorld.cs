@@ -45,7 +45,6 @@ public partial class VoxelWorld : Node
         _chunkUpdater = new ChunkUpdater(this);
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         Signal signal = (Signal)GenerationRelativePoint.Call("get_position_XY_changed");
-        //GenerationRelativePoint.Call("connect")
         GD.Print( GenerationRelativePoint.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged)));
         AddChild(_chunkUpdater);
     }
@@ -78,21 +77,7 @@ public partial class VoxelWorld : Node
     // Summary:
     //      This get you block type (Block.Type enum) from block global position.
     //      If chunk is not chunk it get you Block.Type.CobbleStone. This is for render chunk mesh and collision.
-    public ChunkDataGenerator.BlockTypes GetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition)
-    {
-        Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
-        ChunkResource chunkResource;
-        if (ChunksResources.TryGetValue(chunkPosition, out chunkResource))
-        {
-            Vector3I subPosition = blockGlobalPosition - new Vector3I(chunkPosition.X, 0, chunkPosition.Y) * ChunkDataGenerator.CHUNK_SIZE;
-            return chunkResource.Data[subPosition.X, subPosition.Y, subPosition.Z];
-        }
-        if(_chunkUpdater.CurrentRenderDistanse < RenderDistance - 2)
-        {
-            throw new Exception("Not exist resourse near your chunk to draw!.");
-        }
-        return ChunkDataGenerator.BlockTypes.CobbleStone;
-    }
+    
     public void SetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition, ChunkDataGenerator.BlockTypes blockType)
     {
         Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
@@ -120,35 +105,16 @@ public partial class VoxelWorld : Node
     }
     public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector3I blockGlobalPosition)
     {
-        Vector2I chunkPosition = new Vector2I(blockGlobalPosition.X / ChunkDataGenerator.CHUNK_SIZE, blockGlobalPosition.Z / ChunkDataGenerator.CHUNK_SIZE);
-        if (blockGlobalPosition.X < 0 && blockGlobalPosition.X % ChunkDataGenerator.CHUNK_SIZE != 0)
-        {
-            --chunkPosition.X;
-        }
-        if (blockGlobalPosition.Z < 0 && blockGlobalPosition.Z % ChunkDataGenerator.CHUNK_SIZE != 0)
-        {
-            --chunkPosition.Y;
-        }
-        return chunkPosition;
+       return GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition.X, blockGlobalPosition.Z);
     }
     public static Vector2I GetChunkGlobalPositionFromBlockGlobalPosition(Vector2I blockGlobalPosition)
     {
-        Vector2I chunkPosition = blockGlobalPosition / ChunkDataGenerator.CHUNK_SIZE;
-
-        if (blockGlobalPosition.X < 0 && blockGlobalPosition.X % ChunkDataGenerator.CHUNK_SIZE != 0)
-        {
-            --chunkPosition.X;
-        }
-        if (blockGlobalPosition.Y < 0 && blockGlobalPosition.Y % ChunkDataGenerator.CHUNK_SIZE != 0)
-        {
-            --chunkPosition.Y;
-        }
-        return chunkPosition;
+        return GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition.X, blockGlobalPosition.Y);
     }
-
-
-
-    //Fast code bad readable!
+    public ChunkDataGenerator.BlockTypes GetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition)
+    {
+        return GetBlockTypeInGlobalPosition(blockGlobalPosition.X, blockGlobalPosition.Y, blockGlobalPosition.Z);
+    }
     public ChunkDataGenerator.BlockTypes GetBlockTypeInGlobalPosition(long x, long y,long z)
     {
         Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(x,z);
