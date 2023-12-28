@@ -5,16 +5,16 @@ using Godot.Collections;
 
 namespace ChunksSerealisation
 {
-    public static class ChunkSaver
+    public partial class ChunkSaver : GodotObject
     {
         public const string SAVE_PATH = "user://world/";
         public static Array<Error> SaveStaticTerrain(Dictionary<Vector2I, ChunkResource> chunks)
         {
-
+            _CreateDirectoryWorldInUserOrNothing();
             Array<Error> errors = new();
             foreach (ChunkResource resource in chunks.Values)
             {
-                _CreateDirectoryWorldInUserOrNothing();
+                
                 errors.Add(resource.Save());
             }
             return errors;

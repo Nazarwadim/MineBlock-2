@@ -24,7 +24,7 @@ public partial class ChunkUpdater : Node
     private bool _exitLoops;
     private Thread _thread1;
     private bool _updatingChunksQueue = false;
-    private System.Threading.Mutex _mtxDic;
+    private readonly System.Threading.Mutex _mtxDic;
     public bool IsUpdatingChunks { get; private set; }
     private readonly Generic.Queue<ChunkResource> _ChangedChunksToSave;
     public override void _Ready()
@@ -102,7 +102,7 @@ public partial class ChunkUpdater : Node
                 {
                     for (long i = 1; i <= cur_render + 2 && IsUpdatingChunks; ++i, x1 += dx1, y1 += dy1)
                     {
-                        Vector2I chunkPosition = new Vector2I((int)x1, (int)y1);
+                        Vector2I chunkPosition = new((int)x1, (int)y1);
 
                         _TryGenerateChunkResource(chunkPosition);
                     }
@@ -116,7 +116,7 @@ public partial class ChunkUpdater : Node
                 {
                     for (long i = 1; i <= cur_render && IsUpdatingChunks; ++i, x2 += dx2, y2 += dy2)
                     {
-                        Vector2I chunkPosition = new Vector2I((int)x2, (int)y2);
+                        Vector2I chunkPosition = new((int)x2, (int)y2);
 
                         if (_TryGenerateChunkBody(chunkPosition))
                         {
@@ -228,7 +228,7 @@ public partial class ChunkUpdater : Node
         Shape3D shape3D = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
         
 
-        ChunkStaticBody chunkBody = new ChunkStaticBody(
+        ChunkStaticBody chunkBody = new(
             mesh,
             shape3D,
             new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)

@@ -2,7 +2,7 @@ using Godot;
 
 namespace ChunksSerealisation
 {
-    public static class ChunkLoader
+    public partial class ChunkLoader : GodotObject
     {
         public const string LOAD_PATH = "user://world/";
 

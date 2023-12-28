@@ -52,9 +52,11 @@ namespace ProcedureGeneration
         public const short CHUNK_HEIGHT = 255;
         public const short CHUNK_FAR_AWAY_SIZE = 8;
         public const short CHUNK_FAR_AWAY_HEIGHT = 127;
-        public static RandomNumberGenerator random = new RandomNumberGenerator() { Seed = Seed };
+#pragma warning disable CA2211 // Non-constant fields should not be visible
+        public static RandomNumberGenerator random = new() { Seed = Seed };
+#pragma warning restore CA2211 // Non-constant fields should not be visible
         public const float RANDOM_TO_GENERATE_BLOCK = 0.05f;
-        private static readonly PerlineNoise _noise = new PerlineNoise((int)Seed);
+        private static readonly PerlineNoise _noise = new((int)Seed);
         public static ulong Seed = 0;
 
         public static BlockTypes[,,] GetRandomChunk()
