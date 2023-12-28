@@ -7,25 +7,25 @@ using Godot.Collections;
 
 namespace ProcedureGeneration
 {
-    public static class ChunkDataGenerator
+    public partial class ChunkDataGenerator : GodotObject
     {
-            public enum Biomes
-            {
-                Mountains,
-                Ocean,
-                Plains,
-            }
+        public enum Biomes
+        {
+            Mountains,
+            Ocean,
+            Plains,
+        }
         public enum BlockTypes : byte
         {
             Air,
-            CobbleStone,
+            Stone,
             Dirt,
             GrassBlock,
             Planks,
             Furnace,
             Godot,
             Bricks,
-            Cobblestone,
+            CobbleStone,
             Deepslate,
             Sand,
             Gravel,
@@ -119,7 +119,7 @@ namespace ProcedureGeneration
                     ulong y = 0;
                     for (y = 1; y < chunk_heights[x, z]; ++y)
                     {
-                        chunk[x, y, z] = (byte)BlockTypes.CobbleStone;
+                        chunk[x, y, z] = (byte)BlockTypes.Stone;
                     }
 
                     if (y < 120 && y > 5)

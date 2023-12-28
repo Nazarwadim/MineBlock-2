@@ -20,6 +20,13 @@ public partial class ChunkResource : Resource
     // Summary:
     //     Create chunk without blocks
     public ChunkResource() { }
+
+    public void CopyFromOneDimentionalIntoThreeDimentional()
+    {
+        Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
+        Buffer.BlockCopy(_data, 0, Data, 0, _data.Length);
+    }
+    
     public ChunkResource(byte[,,] data, Vector2I position)
     {
         Position = position;

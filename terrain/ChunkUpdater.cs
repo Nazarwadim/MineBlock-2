@@ -217,15 +217,15 @@ public partial class ChunkUpdater : Node
     }
     private void _UpdateChunkBody(ChunkStaticBody chunkStaticBody, ChunkResource chunkResource)
     {
-        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
-        Shape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
+        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld.ChunksResources);
+        Shape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld.ChunksResources);
         CallDeferred(MethodName._SetChunkBodyMeshAndShape, chunkStaticBody, mesh, shape);
     }
     private ChunkStaticBody _GenerateChunkBody(Vector2I chunkPosition)
     {
         ChunkResource chunkResource = _voxelWorld.ChunksResources[chunkPosition];        
-        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld);
-        Shape3D shape3D = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld);
+        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld.ChunksResources);
+        Shape3D shape3D = ChunksShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld.ChunksResources);
         
 
         ChunkStaticBody chunkBody = new(

@@ -1,0 +1,35 @@
+extends Node
+class_name ChunkBlocks
+enum BlockTypes
+{
+	Air,
+	Stone,
+	Dirt,
+	GrassBlock,
+	Planks,
+	Furnace,
+	Godot,
+	Bricks,
+	CobbleStone,
+	Deepslate,
+	Sand,
+	Gravel,
+	Log,
+	DiamondBlock,
+	IronBlock,
+	GoldBlock,
+	GoldOre,
+	CopperOre,
+	Coal,
+	BookShelf,
+	MossyCobblestone,
+	Obsidian,
+	DiamondOre,
+	IronOre,
+	Sponge,
+	OakLeaves,
+	BirchLeaves,
+	Grass,
+	WitheredGrass,
+	Glass
+}

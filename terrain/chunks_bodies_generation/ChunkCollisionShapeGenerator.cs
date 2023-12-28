@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
 using ProcedureGeneration;
 
 using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
@@ -11,7 +11,7 @@ namespace ChunkBodyGeneration
     {
         public const short CHUNK_SIZE = ChunkDataGenerator.CHUNK_SIZE;
         public const short CHUNK_HEIGHT = ChunkDataGenerator.CHUNK_HEIGHT;
-        public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, VoxelWorld world)
+        public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
         {
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunkResource.Data;
             if (mainDataChunk.Length == 0)
@@ -20,23 +20,19 @@ namespace ChunkBodyGeneration
             }
 
             bool existsSideChunks = true;
-            ChunkResource leftChunk;
-            ChunkResource rightChunk;
-            ChunkResource upChunk;
-            ChunkResource downChunk;
-            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out leftChunk))
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out ChunkResource leftChunk))
             {
                 existsSideChunks = false;
             }
-            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out rightChunk))
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out ChunkResource rightChunk))
             {
                 existsSideChunks = false;
             }
-            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out upChunk))
+            if(!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out ChunkResource upChunk))
             {
                 existsSideChunks = false;
             }
-            if(!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out downChunk))
+            if(!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out ChunkResource downChunk))
             {
                 existsSideChunks = false;
             }
@@ -45,7 +41,7 @@ namespace ChunkBodyGeneration
                 throw new NullReferenceException("Try to generate chunkBody without chunkResources near it!");
             }
             
-            List<Vector3> points = new();
+            System.Collections.Generic.List<Vector3> points = new();
             
             _GenerateInsideChunkSurfaceTool(points, mainDataChunk);            
             _GenerateUpDownYSurfaceTool(points,chunkResource, leftChunk, rightChunk, downChunk, upChunk);
@@ -60,7 +56,7 @@ namespace ChunkBodyGeneration
 
         //Summary:
         //  This is unsafe function!
-        private static void _GenerateInsideChunkSurfaceTool(List<Vector3> pointsData, ChunkDataGenerator.BlockTypes[,,] mainDataChunk)
+        private static void _GenerateInsideChunkSurfaceTool(System.Collections.Generic.List<Vector3> pointsData, ChunkDataGenerator.BlockTypes[,,] mainDataChunk)
         {
             bool[] neighbourBlocksArePhisics = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
             for (long i = 1; i < ChunkDataGenerator.CHUNK_SIZE - 1; ++i)
@@ -91,7 +87,7 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateUpDownYSurfaceTool(List<Vector3> pointsData, ChunkResource chunk, 
+        private static void _GenerateUpDownYSurfaceTool(System.Collections.Generic.List<Vector3> pointsData, ChunkResource chunk, 
             ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunk.Data;
@@ -236,7 +232,7 @@ namespace ChunkBodyGeneration
             }
         }
 
-        private static void _GenerateChunkSidesSurfaceTool(List<Vector3> pointsData, ChunkResource chunk,
+        private static void _GenerateChunkSidesSurfaceTool(System.Collections.Generic.List<Vector3> pointsData, ChunkResource chunk,
             ChunkResource chunkLeft, ChunkResource chunkRight, ChunkResource chunkDown, ChunkResource chunkUp)
         {
             bool[] neighbourBlocksArePhisics = new bool[6];// 0 Front. 1 Back. 2 Left. 3 Right. 4 Down. 5 Up;
@@ -371,7 +367,7 @@ namespace ChunkBodyGeneration
             
         }
 
-        private static void _BuildBlockColision(List<Vector3> pointsData, Vector3I blockSubPosition, bool[] sidesToDraw)
+        private static void _BuildBlockColision(System.Collections.Generic.List<Vector3> pointsData, Vector3I blockSubPosition, bool[] sidesToDraw)
         {
             Vector3[] verts = ChunksBodyGenerator.CalculateBlockVerts(blockSubPosition);
 
@@ -408,7 +404,7 @@ namespace ChunkBodyGeneration
 
         }
 
-        private static void _SetBlockColisionTriangle(List<Vector3> points, Vector3[] verts)
+        private static void _SetBlockColisionTriangle(System.Collections.Generic.List<Vector3> points, Vector3[] verts)
         {
             points.Add(verts[1]);
             points.Add(verts[2]);

@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Godot;
+using Godot.Collections;
 using ProcedureGeneration;
 
 using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
@@ -16,7 +18,7 @@ namespace ChunkBodyGeneration
         //Summary:
         //  This method creates mesh by algoritm from 2d array of blocks and from neighbouring chanks
 
-        public static Mesh GenerateChunkMesh(ChunkResource chunkResource, VoxelWorld world)
+        public static Mesh GenerateChunkMesh(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
         {
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunkResource.Data;
             if (mainDataChunk.Length == 0)
@@ -25,26 +27,24 @@ namespace ChunkBodyGeneration
             }
 
             bool existsSideChunks = true;
-            ChunkResource leftChunk;
-            ChunkResource rightChunk;
-            ChunkResource upChunk;
-            ChunkResource downChunk;
-            if (!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out leftChunk))
+
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out ChunkResource leftChunk))
             {
                 existsSideChunks = false;
             }
-            if (!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out rightChunk))
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out ChunkResource rightChunk))
             {
                 existsSideChunks = false;
             }
-            if (!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out upChunk))
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out ChunkResource upChunk))
             {
                 existsSideChunks = false;
             }
-            if (!world.ChunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out downChunk))
+            if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out ChunkResource downChunk))
             {
                 existsSideChunks = false;
             }
+
             if (!existsSideChunks)
             {
                 throw new NullReferenceException("Try to generate chunkBody without chunkResources near it!");
@@ -385,6 +385,7 @@ namespace ChunkBodyGeneration
             }
 
         }
+        
         private static void _DrawBlockMesh(SurfaceTool surfaceTool, Vector3I blockSubPosition, ChunkDataGenerator.BlockTypes blockId, bool[] sidesToDraw)
         {
 
@@ -486,7 +487,15 @@ namespace ChunkBodyGeneration
             surfaceTool.SetUV(uvs[1]); surfaceTool.AddVertex(verts[1]);
             surfaceTool.SetUV(uvs[0]); surfaceTool.AddVertex(verts[0]);
         }
-
+        private static void _DrawBlockMesh(SurfaceTool surfaceTool, Vector3I blockSubPosition, ChunkDataGenerator.BlockTypes blockId, Array<bool> sidesToDraw)
+        {
+            if(sidesToDraw.Count != 6)
+            {
+                throw new OutOfMemoryException("Sides to draw size should be 6");
+            }
+            bool[] bools = sidesToDraw.ToArray();
+            _DrawBlockMesh(surfaceTool,blockSubPosition,blockId,bools);
+        }
 
         public static Vector2[] CalculateBlockUvs(long blockId)
         {

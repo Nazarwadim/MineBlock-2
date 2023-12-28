@@ -12,15 +12,15 @@ public partial class Terain : Node
 
         Vector2I chunkPosition = new(0, 0);
         byte[,,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
-        ChunkResource chunkResource = new ChunkResource(chunkData, chunkPosition);
+        ChunkResource chunkResource = new(chunkData, chunkPosition);
         voxelWorld.ChunksResources.Add(chunkPosition, chunkResource);
         ulong startMesh = Time.GetTicksUsec();
-        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, voxelWorld);
+        Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, voxelWorld.ChunksResources);
         GD.Print("Mesh time generation = ", Time.GetTicksUsec() - startMesh);
         ulong startShape = Time.GetTicksUsec();
-        ConcavePolygonShape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, voxelWorld);
+        ConcavePolygonShape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, voxelWorld.ChunksResources);
         GD.Print("Shape time generation = ", Time.GetTicksUsec() - startShape);
-        ChunkStaticBody chunkBody = new ChunkStaticBody(
+        ChunkStaticBody chunkBody = new(
             mesh,
             shape,
             new Vector3(chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, 0, chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE)

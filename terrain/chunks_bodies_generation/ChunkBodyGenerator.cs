@@ -1,4 +1,6 @@
+using System.Linq;
 using Godot;
+using Godot.Collections;
 using ProcedureGeneration;
 
 
@@ -49,6 +51,10 @@ namespace ChunkBodyGeneration
 			}
 			return true;
 		}
-
+		public static bool IsBlockSidesToCreate(Array<bool> sides)
+		{
+			bool[] ar = sides.ToArray();
+			return IsBlockSidesToCreate(ar);
+		}
 	}
 }
