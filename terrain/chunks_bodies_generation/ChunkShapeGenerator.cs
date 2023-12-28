@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 using ProcedureGeneration;
@@ -7,12 +8,14 @@ using BlockSides = ChunkBodyGeneration.ChunkBodyGenerator.BlockSide;
 namespace ChunkBodyGeneration
 {
     
-    public partial class ChunksShapeGenerator : GodotObject
+    public partial class ChunkShapeGenerator : GodotObject
     {
         public const short CHUNK_SIZE = ChunkDataGenerator.CHUNK_SIZE;
         public const short CHUNK_HEIGHT = ChunkDataGenerator.CHUNK_HEIGHT;
+        
         public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
         {
+            
             ChunkDataGenerator.BlockTypes[,,] mainDataChunk = chunkResource.Data;
             if (mainDataChunk.Length == 0)
             {
@@ -40,10 +43,8 @@ namespace ChunkBodyGeneration
             {
                 throw new NullReferenceException("Try to generate chunkBody without chunkResources near it!");
             }
-            
-            System.Collections.Generic.List<Vector3> points = new();
-            
-            _GenerateInsideChunkSurfaceTool(points, mainDataChunk);            
+            System.Collections.Generic.List<Vector3> points = new(1024);
+            _GenerateInsideChunkSurfaceTool(points, mainDataChunk);           
             _GenerateUpDownYSurfaceTool(points,chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             _GenerateChunkSidesSurfaceTool(points, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
             
@@ -51,6 +52,7 @@ namespace ChunkBodyGeneration
             {
                 Data = points.ToArray()
             };
+            
             return concavePolygonShape3D;
         }
 
@@ -415,6 +417,32 @@ namespace ChunkBodyGeneration
             points.Add(verts[0]);
         }
 
+        private static void _BuildBlockColision(Array<Vector3> pointsData, Vector3I blockSubPosition, Array<bool> sidesToDraw)
+        {
+            bool[] sides = sidesToDraw.ToArray();
+            if(sides.Length != 6)
+            {
+                throw new OutOfMemoryException("Should be 6 sides not " + Convert.ToString(sides.Length));
+            }
+
+            System.Collections.Generic.List<Vector3> points = new(16);
+            _BuildBlockColision(points,blockSubPosition, sides);
+
+            foreach (var item in points)
+            {
+                pointsData.Add(item);
+            }
+        }
+
+        private static void _SetBlockColisionTriangle(Array<Vector3> points, Vector3[] verts)
+        {
+            System.Collections.Generic.List<Vector3> pointsList = new(6);
+            _SetBlockColisionTriangle(pointsList, verts);
+            foreach (var item in pointsList)
+            {
+                points.Add(item);
+            }
+        }
         public static bool IsBlockNotCollide(ChunkDataGenerator.BlockTypes blockId)
         {
             return blockId == ChunkDataGenerator.BlockTypes.Air || ((int)blockId > 25 && (int)blockId < 30);

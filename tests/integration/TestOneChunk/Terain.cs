@@ -18,7 +18,7 @@ public partial class Terain : Node
         Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, voxelWorld.ChunksResources);
         GD.Print("Mesh time generation = ", Time.GetTicksUsec() - startMesh);
         ulong startShape = Time.GetTicksUsec();
-        ConcavePolygonShape3D shape = ChunksShapeGenerator.GenerateChunkShape(chunkResource, voxelWorld.ChunksResources);
+        ConcavePolygonShape3D shape = ChunkShapeGenerator.GenerateChunkShape(chunkResource, voxelWorld.ChunksResources);
         GD.Print("Shape time generation = ", Time.GetTicksUsec() - startShape);
         ChunkStaticBody chunkBody = new(
             mesh,
