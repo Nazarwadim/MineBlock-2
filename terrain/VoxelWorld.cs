@@ -24,7 +24,7 @@ public partial class VoxelWorld : Node
     [Export]private ChunkUpdater _chunkUpdater;
     [Export] public bool IsSerialization;
     
-    
+    [Export] public string WorldName{get; private set;}
     public readonly Dictionary<Vector2I, ChunkResource> ChunksResources;
     public readonly Dictionary<Vector2I, ChunkStaticBody> ChunksBodies;
     
