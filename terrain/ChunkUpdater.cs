@@ -40,7 +40,6 @@ public partial class ChunkUpdater : Node
 
     private void _OnMidleChunkPositionChanged(Vector2I chunk_position)
     {
-
         _middleChunkPos = chunk_position;
         _UpdateChunks();
     }
@@ -103,7 +102,6 @@ public partial class ChunkUpdater : Node
                     for (long i = 1; i <= cur_render + 2 && IsUpdatingChunks; ++i, x1 += dx1, y1 += dy1)
                     {
                         Vector2I chunkPosition = new((int)x1, (int)y1);
-
                         _TryGenerateChunkResource(chunkPosition);
                     }
                     //turn right
@@ -156,6 +154,7 @@ public partial class ChunkUpdater : Node
     private bool _TryGenerateChunkResource(Vector2I chunkPosition)
     {
         if (_voxelWorld.ChunksResources.ContainsKey(chunkPosition)) return false;
+        bool generatedResource = false;
         ChunkResource chunkResource = null;
         if (_voxelWorld.IsSerialization)
         {
@@ -165,11 +164,12 @@ public partial class ChunkUpdater : Node
         {
             byte[,,] chunkData = ChunkDataGenerator.GetChunkWithTerrain(chunkPosition);
             chunkResource = new ChunkResource(chunkData, chunkPosition);
+            generatedResource = true;
         }
         if (chunkResource != null)
         {
             _voxelWorld.ChunksResources.Add(chunkPosition, chunkResource);
-            if (_DistanceSquaredFromToVector2I(chunkPosition, _middleChunkPos) < _voxelWorld.RenderDistance)
+            if (generatedResource && _DistanceSquaredFromToVector2I(chunkPosition, _middleChunkPos) < _voxelWorld.RenderDistance)
             {
                 if (!_ChangedChunksToSave.Contains(chunkResource))
                 {
