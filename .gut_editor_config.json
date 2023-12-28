@@ -3,7 +3,7 @@
  "compact_mode": false,
  "config_file": "res://.gutconfig.json",
  "dirs": [
-  "res://tests/unit"
+  "res://tests/unit/test_static_body_generators"
  ],
  "disable_colors": false,
  "double_strategy": 1,
@@ -14,7 +14,7 @@
  "gut_on_top": true,
  "hide_orphans": false,
  "ignore_pause": false,
- "include_subdirs": true,
+ "include_subdirs": false,
  "inner_class": null,
  "junit_xml_file": "",
  "junit_xml_timestamp": false,
@@ -22,7 +22,7 @@
  "opacity": 100,
  "paint_after": 0.1,
  "panel_options": {
-  "font_name": "CourierPrime",
+  "font_name": "AnonymousPro",
   "font_size": 30,
   "hide_output_text": false,
   "hide_result_tree": false,
@@ -34,12 +34,12 @@
  "post_run_script": "",
  "pre_run_script": "",
  "prefix": "test_",
- "selected": "test_mesh_generator.gd",
+ "selected": "test_chunk_body_generator.gd",
  "should_exit": false,
  "should_exit_on_success": false,
  "should_maximize": false,
  "show_help": false,
  "suffix": ".gd",
  "tests": [],
- "unit_test_name": null
+ "unit_test_name": "test_CalculateBlockVerts"
 }

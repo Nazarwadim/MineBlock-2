@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Security.Cryptography;
 using Godot;
 using Godot.Collections;
 using ProcedureGeneration;
@@ -6,7 +8,7 @@ using ProcedureGeneration;
 
 namespace ChunkBodyGeneration
 {
-	public partial class ChunksBodyGenerator : GodotObject
+	public partial class ChunkBodyGenerator : GodotObject
 	{
 		//Dont Add or remove elements, this will couse serious error!
 		public enum BlockSide
@@ -18,7 +20,6 @@ namespace ChunkBodyGeneration
 			Down,
 			Up
 		}
-		const int CHUNK_LAST_INDEX = ChunkDataGenerator.CHUNK_SIZE - 1;
 
 		public static Vector3[] CalculateBlockVerts(Vector3 blockPosition)
 		{
@@ -53,6 +54,10 @@ namespace ChunkBodyGeneration
 		}
 		public static bool IsBlockSidesToCreate(Array<bool> sides)
 		{
+			if(sides.Count != 6)
+			{
+				throw new OutOfMemoryException("Should be 6 sides not " + Convert.ToString(sides.Count));
+			}
 			bool[] ar = sides.ToArray();
 			return IsBlockSidesToCreate(ar);
 		}

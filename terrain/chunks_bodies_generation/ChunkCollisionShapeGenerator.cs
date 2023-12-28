@@ -3,7 +3,7 @@ using Godot;
 using Godot.Collections;
 using ProcedureGeneration;
 
-using BlockSides = ChunkBodyGeneration.ChunksBodyGenerator.BlockSide;
+using BlockSides = ChunkBodyGeneration.ChunkBodyGenerator.BlockSide;
 namespace ChunkBodyGeneration
 {
     
@@ -77,7 +77,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[i, j - 1, k]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[i, j + 1, k]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)i, (int)j, (int)k), neighbourBlocksArePhisics);
                         }
@@ -117,7 +117,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -152,7 +152,7 @@ namespace ChunkBodyGeneration
 
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -182,7 +182,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Right] = IsBlockNotCollide(mainDataChunk[x + 1, y, z]);
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -223,7 +223,7 @@ namespace ChunkBodyGeneration
 
                         neighbourBlocksArePhisics[y != 0 ? (int)BlockSides.Down : (int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + blockYSideCheck, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -273,7 +273,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[x, y - 1, i]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + 1, i]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)i), neighbourBlocksArePhisics);
                         }
@@ -309,7 +309,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[i, y - 1, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[i, y + 1, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)i, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -357,7 +357,7 @@ namespace ChunkBodyGeneration
                         neighbourBlocksArePhisics[(int)BlockSides.Down] = IsBlockNotCollide(mainDataChunk[x, y - 1, z]);
                         neighbourBlocksArePhisics[(int)BlockSides.Up] = IsBlockNotCollide(mainDataChunk[x, y + 1, z]);
 
-                        if (ChunksBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
+                        if (ChunkBodyGenerator.IsBlockSidesToCreate(neighbourBlocksArePhisics))
                         {
                             _BuildBlockColision(pointsData, new Vector3I((int)x, (int)y, (int)z), neighbourBlocksArePhisics);
                         }
@@ -369,7 +369,7 @@ namespace ChunkBodyGeneration
 
         private static void _BuildBlockColision(System.Collections.Generic.List<Vector3> pointsData, Vector3I blockSubPosition, bool[] sidesToDraw)
         {
-            Vector3[] verts = ChunksBodyGenerator.CalculateBlockVerts(blockSubPosition);
+            Vector3[] verts = ChunkBodyGenerator.CalculateBlockVerts(blockSubPosition);
 
             if (sidesToDraw[(int)BlockSides.Left])
             {

@@ -123,5 +123,3 @@ func test_GenerateChunkMesh():
 	var mesh_expected :ArrayMesh= ResourceLoader.load("res://tests/mocks/test_mesh.res")
 	var expected = mesh_expected.surface_get_arrays(0)
 	assert_eq(result, expected)
-	
-	

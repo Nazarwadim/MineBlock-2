@@ -108,8 +108,6 @@ func _input(event):
 		if event.is_action_pressed("use_flashlight"):
 			$Head/SpotLight3D.visible = not $Head/SpotLight3D.visible
 
-
-
 func _on_current_render_distance_changed(value:int):
 	if(value > 0):
 		can_move = true
