@@ -112,13 +112,12 @@ func test_GenerateChunkMesh():
 	right_chunk.CopyFromOneDimentionalIntoThreeDimentional()
 	left_chunk.CopyFromOneDimentionalIntoThreeDimentional()
 	var chunkres:ChunkResource = ChunkResource.new()
-	chunkres.Position
 	var chunk_resources := {midle_chunk.Position : midle_chunk,
 						up_chunk.Position : up_chunk,
 						down_chunk.Position : down_chunk,
 						right_chunk.Position : right_chunk,
-						left_chunk.Position : left_chunk
-	} 
+						left_chunk.Position : left_chunk}
+						 
 	var array_mesh :ArrayMesh = chunks_mesh_generator.GenerateChunkMesh(midle_chunk, chunk_resources)
 	var result = array_mesh.surface_get_arrays(0)
 	var mesh_expected :ArrayMesh= ResourceLoader.load("res://tests/mocks/test_mesh.res")
