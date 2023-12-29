@@ -7,7 +7,6 @@ public partial class ChunkStaticBody : StaticBody3D
 {
     public MeshInstance3D MeshInstance{get;set;}
     public CollisionShape3D ColisionShape{get;set;}
-    private VisibleOnScreenNotifier3D _visibleOnScreenNotifier;
 
     private static readonly Material _MATERIAL_OVERRIDE  = GD.Load<Material>("res://textures/material.tres");
     public ChunkStaticBody(Mesh mesh, Shape3D shape, Vector3 position) : this(mesh,position)
@@ -16,7 +15,6 @@ public partial class ChunkStaticBody : StaticBody3D
         {
             Shape = shape
         };
-
     }
 
     public void SetNewMesh(Mesh mesh)
@@ -53,7 +51,6 @@ public partial class ChunkStaticBody : StaticBody3D
     
     public override void _Ready()
     {
-        
         CollisionLayer = 3;
         MeshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.DoubleSided;
         if(ColisionShape == null)
@@ -66,15 +63,12 @@ public partial class ChunkStaticBody : StaticBody3D
         }
         MeshInstance.MaterialOverride = _MATERIAL_OVERRIDE;
 
-        _visibleOnScreenNotifier = new VisibleOnScreenNotifier3D();
-        Vector3 _size = new (ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT,ChunkDataGenerator.CHUNK_SIZE);
-        _visibleOnScreenNotifier.Aabb = new Aabb(Vector3.Zero, _size);
         
-        AddChild(_visibleOnScreenNotifier);
+        Vector3 _size = new (ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT,ChunkDataGenerator.CHUNK_SIZE);
+        
         AddChild(ColisionShape);
         AddChild(MeshInstance);
 
-        _visibleOnScreenNotifier.ScreenEntered += () => MeshInstance.Visible = true;
-        _visibleOnScreenNotifier.ScreenExited += () => MeshInstance.Visible = false;
+        
     }
 }

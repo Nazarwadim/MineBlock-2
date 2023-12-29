@@ -277,6 +277,4 @@ public partial class ChunkUpdater : Node
     {
         return (to.X - from.X) * (to.X - from.X) + (to.Y - from.Y) * (to.Y - from.Y);
     }
-
-
 }

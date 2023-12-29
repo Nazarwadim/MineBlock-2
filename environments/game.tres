@@ -10,7 +10,7 @@ sky_material = SubResource("PanoramaSkyMaterial_65rho")
 
 [resource]
 background_mode = 2
-background_energy_multiplier = 0.25
+background_energy_multiplier = 0.2
 sky = SubResource("Sky_u6213")
 sky_rotation = Vector3(0, 0.20944, 0)
 tonemap_mode = 2
