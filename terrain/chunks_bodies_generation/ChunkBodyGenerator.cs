@@ -8,6 +8,7 @@ using ProcedureGeneration;
 
 namespace ChunkBodyGeneration
 {
+
 	public partial class ChunkBodyGenerator : GodotObject
 	{
 		//Dont Add or remove elements, this will couse serious error!
@@ -20,6 +21,16 @@ namespace ChunkBodyGeneration
 			Down,
 			Up
 		}
+		public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
+    	{
+			return ChunkShapeGenerator.GenerateChunkShape(chunkResource, chunksResources);
+		}
+
+		public static Mesh GenerateChunkMesh(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
+        {
+			return ChunksMeshGenerator.GenerateChunkMesh(chunkResource, chunksResources);
+		}
+
 
 		public static Vector3[] CalculateBlockVerts(Vector3 blockPosition)
 		{

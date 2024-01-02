@@ -4,27 +4,30 @@ using ChunkBodyGeneration;
 using ProcedureGeneration;
 using System;
 using System.Threading.Tasks;
-
+using ChunksSerealization;
+using System.Dynamic;
 [GlobalClass]
 public partial class VoxelWorld : Node
 {
-    
     [Signal] public delegate void MiddleChunkPositionChangedEventHandler(Vector2I position);
     [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
+
     public VoxelWorld()
     {
         ChunksResources = new Dictionary<Vector2I, ChunkResource>();
         ChunksBodies = new Dictionary<Vector2I, ChunkStaticBody>();
         _middleChunkPos = new Vector2I();
     }
+
     [Export] ulong Seed;
     [Export] public int RenderDistance = 10;
     [Export] private WorldEnvironment _worldEnvironment;
     [Export] private Node3D _generationRelativePlayer;
     [Export]private ChunkUpdater _chunkUpdater;
-    [Export] public bool IsSerialization;
-    
     [Export] public string WorldName{get; private set;}
+    [Export] public bool IsSerialization{get;private set;}
+    
+    
     public readonly Dictionary<Vector2I, ChunkResource> ChunksResources;
     public readonly Dictionary<Vector2I, ChunkStaticBody> ChunksBodies;
     
@@ -32,6 +35,11 @@ public partial class VoxelWorld : Node
     private Vector2I _middleChunkPos;
     public override void _Ready()
     {
+        if(WorldName == null)
+        {
+            GD.PrintErr("Set world name!");
+            GetTree().Quit();
+        }
         if(_generationRelativePlayer == null)
         {
             GD.PrintErr("Set base player! VoxelWorld.cs Ready()");
@@ -47,11 +55,18 @@ public partial class VoxelWorld : Node
             GD.PrintErr("Set ChunkUpdater!!!! VoxelWorld.cs Ready()");
             GetTree().Quit();
         }
-
         ChunkDataGenerator.Seed = Seed;
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         Signal signal = (Signal)_generationRelativePlayer.Call("get_position_XY_changed");
         _generationRelativePlayer.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged));
+        
+        ChildEnteredTree += (Node node) => {
+            int _reloadDistance = (int)(_worldEnvironment.Environment.SdfgiMaxDistance * _worldEnvironment.Environment.SdfgiMaxDistance / (2 * ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_SIZE));
+            if(ChunksBodies.Count == _reloadDistance)
+            {
+                _ReloadSdfgi();
+            }
+        }; 
     }
     private void _OnCurrentRenderDistanceChanged(int renderDistance)
     {
@@ -74,15 +89,12 @@ public partial class VoxelWorld : Node
         }
     }
 
-    public void Save()
+    public void Save(string savePath)
     {
-        if(IsSerialization) _chunkUpdater.SaveChangedChunks();
-        else throw new Exception("Trying to save chunks, when it doesn`t allowed. Set IsSerialization var to true!");
+        
+        _chunkUpdater.SaveChangedChunks(savePath);
     }
-    // Summary:
-    //      This get you block type (Block.Type enum) from block global position.
-    //      If chunk is not chunk it get you Block.Type.CobbleStone. This is for render chunk mesh and collision.
-    
+
     public void SetBlockTypeInGlobalPosition(Vector3I blockGlobalPosition, ChunkDataGenerator.BlockTypes blockType)
     {
         Vector2I chunkPosition = GetChunkGlobalPositionFromBlockGlobalPosition(blockGlobalPosition);
@@ -150,4 +162,16 @@ public partial class VoxelWorld : Node
         return chunkPosition;
     }
 
+
+    private void _ReloadSdfgi()
+    {
+        if(_worldEnvironment.Environment.SdfgiYScale == Godot.Environment.SdfgiyScale.Scale75Percent)
+        {
+            _worldEnvironment.Environment.SdfgiYScale = Godot.Environment.SdfgiyScale.Scale50Percent;
+        }
+        else
+        {
+            _worldEnvironment.Environment.SdfgiYScale = Godot.Environment.SdfgiyScale.Scale75Percent;
+        }
+    }
 }

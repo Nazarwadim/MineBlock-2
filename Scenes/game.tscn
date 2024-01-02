@@ -1,14 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=7 format=3 uid="uid://cft5uj8g6a10"]
 
 [ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
 [ext_resource type="Script" path="res://terrain/ChunkUpdater.cs" id="3_1pd3j"]
 [ext_resource type="Environment" uid="uid://bp1x2t1tkv70j" path="res://environments/game.tres" id="4_6g0yj"]
 [ext_resource type="PackedScene" uid="uid://1s4asqpay67m" path="res://player/player.tscn" id="4_lr1jj"]
+[ext_resource type="Script" path="res://terrain/serialization/GameSerializer.cs" id="6_dphca"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_m12kp")
-use_serealisation = true
 
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "_generationRelativePlayer", "_chunkUpdater")]
 script = ExtResource("2_yr4dd")
@@ -17,6 +17,7 @@ RenderDistance = 30
 _worldEnvironment = NodePath("../WorldEnvironment")
 _generationRelativePlayer = NodePath("../Player")
 _chunkUpdater = NodePath("ChunkUpdater")
+WorldName = "world"
 IsSerialization = true
 
 [node name="ChunkUpdater" type="Node" parent="VoxelWorld"]
@@ -34,11 +35,19 @@ shadow_bias = 0.025
 shadow_normal_bias = 2.084
 shadow_reverse_cull_face = true
 directional_shadow_mode = 1
-directional_shadow_fade_start = 1.0
-directional_shadow_max_distance = 676.3
-
-[node name="SaveTimer" type="Timer" parent="."]
-wait_time = 30.0
+directional_shadow_max_distance = 300.0
 
 [node name="Player" parent="." instance=ExtResource("4_lr1jj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 152.573, 0)
+
+[node name="GameSerializer" type="Node" parent="." node_paths=PackedStringArray("_voxelWorld", "_player")]
+script = ExtResource("6_dphca")
+_voxelWorld = NodePath("../VoxelWorld")
+_player = NodePath("../Player")
+IsWorking = true
+
+[node name="SaveTimer" type="Timer" parent="GameSerializer"]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="GameSerializer/SaveTimer" to="GameSerializer" method="_onSaveTimerTimeout"]

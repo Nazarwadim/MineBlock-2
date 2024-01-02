@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using ProcedureGeneration;
 using ChunkBodyGeneration;
-using ChunksSerealisation;
+using ChunksSerealization;
 
 using Generic = System.Collections.Generic;
 
@@ -12,6 +12,7 @@ using Generic = System.Collections.Generic;
 public partial class ChunkUpdater : Node
 {
     [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
+    
     public int CurrentRenderDistanse { get; private set; }
     public ChunkUpdater()
     {
@@ -32,10 +33,10 @@ public partial class ChunkUpdater : Node
         _voxelWorld = GetParent() as VoxelWorld;
         if(_voxelWorld == null)
         {
-            GD.Print("Can`t create ChunkUpdater when parent isn`t VoxelWorld!!! ChunkUpdater.cs Ready()");
+            GD.PrintErr("Can`t create ChunkUpdater when parent isn`t VoxelWorld!!! ChunkUpdater.cs Ready()");
+            GetTree().Quit();
         }
         _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
-        _UpdateChunks();
     }
 
     private void _OnMidleChunkPositionChanged(Vector2I chunk_position)
@@ -44,22 +45,21 @@ public partial class ChunkUpdater : Node
         _UpdateChunks();
     }
 
-    public void SaveChangedChunks()
+    public void SaveChangedChunks(string savePath)
     {
         while (_ChangedChunksToSave.Count > 0)
         {
             ChunkResource chunkResource = _ChangedChunksToSave.Dequeue();
-            ChunkSaver.SaveChunk(chunkResource);
+            ChunkSaver.SaveChunk(chunkResource,  savePath);
+            GD.Print("Save");
         }
     }
 
 
     private void _UpdateChunks()
     {
-
         _SafeStopAndWaitToChunkBodyGeneration();
         _StartChunkBodyGenerationByThread();
-
     }
 
     private void _SafeStopAndWaitToChunkBodyGeneration()
@@ -102,7 +102,9 @@ public partial class ChunkUpdater : Node
                     for (long i = 1; i <= cur_render + 2 && IsUpdatingChunks; ++i, x1 += dx1, y1 += dy1)
                     {
                         Vector2I chunkPosition = new((int)x1, (int)y1);
+                        
                         _TryGenerateChunkResource(chunkPosition);
+                        
                     }
                     //turn right
                     long t = dx1;
@@ -115,9 +117,9 @@ public partial class ChunkUpdater : Node
                     for (long i = 1; i <= cur_render && IsUpdatingChunks; ++i, x2 += dx2, y2 += dy2)
                     {
                         Vector2I chunkPosition = new((int)x2, (int)y2);
-
                         if (_TryGenerateChunkBody(chunkPosition))
                         {
+                            
                             ++generatedMeshes;
                         }
 
@@ -158,7 +160,7 @@ public partial class ChunkUpdater : Node
         ChunkResource chunkResource = null;
         if (_voxelWorld.IsSerialization)
         {
-            chunkResource = ChunkLoader.GetChunkResourceOrNull(chunkPosition);
+            chunkResource = ChunkLoader.GetChunkResourceOrNull(chunkPosition,  GameSerializer.BASE_WORLDS_PATH + _voxelWorld.WorldName + '/' + GameSerializer.CHUNKS_DIR + '/');
         }
         if (chunkResource == null)
         {
@@ -206,7 +208,6 @@ public partial class ChunkUpdater : Node
         ChunkStaticBody chunkStaticBody = _voxelWorld.ChunksBodies[chunkPos];
         _mtxDic.ReleaseMutex();
         ThreadPool.QueueUserWorkItem((object obj) => _UpdateChunkBody(chunkStaticBody, chunkResource));
-        GD.Print(ThreadPool.ThreadCount);
         if (_voxelWorld.IsSerialization)
         {
             if (!_ChangedChunksToSave.Contains(chunkResource))
@@ -223,7 +224,7 @@ public partial class ChunkUpdater : Node
     }
     private ChunkStaticBody _GenerateChunkBody(Vector2I chunkPosition)
     {
-        ChunkResource chunkResource = _voxelWorld.ChunksResources[chunkPosition];        
+        ChunkResource chunkResource = _voxelWorld.ChunksResources[chunkPosition];  
         Mesh mesh = ChunksMeshGenerator.GenerateChunkMesh(chunkResource, _voxelWorld.ChunksResources);
         Shape3D shape3D = ChunkShapeGenerator.GenerateChunkShape(chunkResource, _voxelWorld.ChunksResources);
         

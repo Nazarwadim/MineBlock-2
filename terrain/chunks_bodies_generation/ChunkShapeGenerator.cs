@@ -52,7 +52,7 @@ namespace ChunkBodyGeneration
             {
                 Data = points.ToArray()
             };
-            
+            concavePolygonShape3D.Margin = 0.2f;
             return concavePolygonShape3D;
         }
 

@@ -1,21 +1,33 @@
+using System;
 using Godot;
 
-namespace ChunksSerealisation
+namespace ChunksSerealization
 {
     public partial class ChunkLoader : GodotObject
     {
-        public const string LOAD_PATH = "user://world/";
-
-        public static ChunkResource GetChunkResourceOrNull(Vector2I chunkPosition)
+        public static ChunkResource GetChunkResourceOrNull(Vector2I chunkPosition, string chunksPath)
         {
-            if(FileAccess.FileExists(LOAD_PATH + GD.VarToStr(chunkPosition) + ".res"))
+            string _chunkResourcePath = chunksPath + GD.VarToStr(chunkPosition) + ".res";
+            if (FileAccess.FileExists(_chunkResourcePath))
             {
-                return ChunkResource.Load(chunkPosition);
+                try
+                {   
+                    ChunkResource resource = new();
+                    resource.Load(_chunkResourcePath);
+                    return resource;
+                }
+                catch (Exception)
+                {
+                    
+                    DirAccess.RemoveAbsolute(_chunkResourcePath);
+                    return null;
+                }
             }
             else
             {
                 return null;
             }
+
         }
     }
 }

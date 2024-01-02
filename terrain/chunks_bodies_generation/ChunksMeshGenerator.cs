@@ -31,18 +31,22 @@ namespace ChunkBodyGeneration
             if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X - 1, chunkResource.Position.Y), out ChunkResource leftChunk))
             {
                 existsSideChunks = false;
+                GD.Print("1", " ", chunkResource.Position);
             }
             if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X + 1, chunkResource.Position.Y), out ChunkResource rightChunk))
             {
                 existsSideChunks = false;
+                GD.Print("2");
             }
             if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y + 1), out ChunkResource upChunk))
             {
                 existsSideChunks = false;
+                GD.Print("3");
             }
             if (!chunksResources.TryGetValue(new Vector2I(chunkResource.Position.X, chunkResource.Position.Y - 1), out ChunkResource downChunk))
             {
                 existsSideChunks = false;
+                GD.Print("4");
             }
 
             if (!existsSideChunks)

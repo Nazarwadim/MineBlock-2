@@ -3,35 +3,15 @@ using System.Reflection.Metadata;
 using Godot;
 using Godot.Collections;
 
-namespace ChunksSerealisation
+namespace ChunksSerealization
 {
     public partial class ChunkSaver : GodotObject
     {
-        public const string SAVE_PATH = "user://world/";
-        public static Array<Error> SaveStaticTerrain(Dictionary<Vector2I, ChunkResource> chunks)
+        public static void SaveChunk(ChunkResource resource, string chunksPath)
         {
-            _CreateDirectoryWorldInUserOrNothing();
-            Array<Error> errors = new();
-            foreach (ChunkResource resource in chunks.Values)
-            {
-                
-                errors.Add(resource.Save());
-            }
-            return errors;
+            string _chunkResourcePath = chunksPath + GD.VarToStr(resource.Position) + ".res";
+            resource.Save(_chunkResourcePath);
         }
-        public static void SaveChunk(ChunkResource resource)
-        {
-            _CreateDirectoryWorldInUserOrNothing();
-            resource.Save();
-        }
-
-
-        private static void _CreateDirectoryWorldInUserOrNothing()
-        {
-            if(!DirAccess.DirExistsAbsolute(SAVE_PATH.Remove(SAVE_PATH.Length - 1)))
-            {
-                DirAccess.MakeDirAbsolute(SAVE_PATH.Remove(SAVE_PATH.Length - 1));
-            }
-        }
+        
     }
 }

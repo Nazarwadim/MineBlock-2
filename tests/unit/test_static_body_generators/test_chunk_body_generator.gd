@@ -17,6 +17,7 @@ func test_IsBlockSidesToCreate():
 	assert_false(result1)
 	assert_true(result2)
 	assert_true(result3)
+	
 
 func test_CalculateBlockVerts():
 	var position1 = Vector3(310,12,5235)

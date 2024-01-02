@@ -1,10 +1,8 @@
 using System;
 using Godot;
-using Godot.Collections;
-using Godot.NativeInterop;
 using ProcedureGeneration;
-using ChunksSerealisation;
-using System.Threading;
+using ChunksSerealization;
+
 // Summary:
 //     This is Chunk container resource that can be saved.
 
@@ -34,35 +32,25 @@ public partial class ChunkResource : Resource
         Buffer.BlockCopy(data, 0, Data, 0, data.Length);
     }
 
-    public Error Save()
+    public Error Save(string resourcePath)
     {
+        
         _data = new byte[ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE];
         Buffer.BlockCopy(Data, 0, _data, 0, _data.Length);
-        Error error = ResourceSaver.Save(this, ChunkSaver.SAVE_PATH + GD.VarToStr(Position) + ".res", ResourceSaver.SaverFlags.Compress);
+        Error error = ResourceSaver.Save(this, resourcePath, ResourceSaver.SaverFlags.Compress);
         _data = null;
         return error;
     }
 
-
-    public static ChunkResource Load(Vector2I position)
+    public void Load(string resourcePath)
     {
-        try
+        ChunkResource chunk = (ChunkResource)ResourceLoader.Load(resourcePath);
+        if(chunk._data.Length != ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE)
         {
-            ChunkResource chunk = (ChunkResource)ResourceLoader.Load(ChunkSaver.SAVE_PATH + GD.VarToStr(position) + ".res");
-            if(chunk._data.Length != ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE)
-            {
-                throw new Exception();
-            }
-            chunk.Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
-            Buffer.BlockCopy(chunk._data, 0, chunk.Data, 0, chunk._data.Length);
-            chunk._data = null;
-            return chunk;
+            throw new Exception();
         }
-        catch (Exception)
-        {
-            DirAccess.RemoveAbsolute(ChunkSaver.SAVE_PATH + GD.VarToStr(position) + ".res");
-            return null;
-        }
-
+        Position = chunk.Position;
+        Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
+        Buffer.BlockCopy(chunk._data, 0, Data, 0, chunk._data.Length);
     }
 }

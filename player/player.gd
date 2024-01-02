@@ -1,5 +1,5 @@
 extends CharacterBody3D
-
+class_name Player
 const EYE_HEIGHT_STAND = 1.6
 const EYE_HEIGHT_CROUCH = 1.4
 const MOVEMENT_SPEED_GROUND = 0.6
@@ -10,8 +10,6 @@ const MOVEMENT_FRICTION_AIR = 0.98
 
 var _mouse_motion = Vector2()
 var _selected_block = 6
-@export var is_serialisatable:bool = false
-const SAVE_PATH = "user://PlayerTransform.bin"
 @onready var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var _voxel_world :VoxelWorld= $"../VoxelWorld"
 @onready var head = $Head
@@ -24,32 +22,32 @@ signal position_XZ_changed(position:Vector2i)
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	_voxel_world.CurrentRenderDistanseChanged.connect(_on_current_render_distance_changed)
-	if is_serialisatable:
-		position_XZ_changed.emit(Vector2i(position.x, position.z))
-		_set_deafult_rotation_for_areas.call_deferred()
+	position_XZ_changed.emit(Vector2i(position.x, position.z))
 
 func get_position_XY_changed() ->Signal:
 	return position_XZ_changed
 	
-
-func _enter_tree():
-	if(FileAccess.file_exists(SAVE_PATH) and is_serialisatable):
-		transform = bytes_to_var( FileAccess.get_file_as_bytes(SAVE_PATH))
-		
-		
 func _set_deafult_rotation_for_areas():
 	$BlockToPlaseArea.rotation = Vector3(0,0,0)
 	$BlockToRemoveArea.rotation = Vector3(0,0,0)
 
-
+func loadPlayer(path:String):
+	if FileAccess.file_exists(path + "data.bin"):
+		var data :Dictionary= bytes_to_var(FileAccess.get_file_as_bytes(path + "data.bin"))
+		_set_data_from_save(data)
+		_set_deafult_rotation_for_areas()
+		position_XZ_changed.emit(Vector2i(position.x, position.z))
 		
-func save():
-	var transform_bynary = var_to_bytes(transform)
-	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	file.store_buffer(transform_bynary)
+		
+func save(path:String):
+	var file_position = FileAccess.open(path + "data.bin", FileAccess.WRITE)
+	var data :Dictionary = _get_data_to_save()
+	var bin_data = var_to_bytes(data)
+	file_position.store_buffer(bin_data)
 	
 var _block_pos_set_before:Vector3i = Vector3i.ZERO
 func _physics_process(delta):
+	
 	if(Vector2i(position.x, position.z) != position_before):
 		position_before = Vector2i(position.x, position.z)
 		position_XZ_changed.emit(position_before)
@@ -79,6 +77,7 @@ func _physics_process(delta):
 		$BlockToPlaseArea.visible = false
 			
 func _process(_delta):
+	
 	if !can_move:
 		return
 	# Mouse movement.
@@ -86,7 +85,6 @@ func _process(_delta):
 	transform.basis = Basis.from_euler(Vector3(0, _mouse_motion.x * -0.0022, 0))
 	head.transform.basis = Basis.from_euler(Vector3(_mouse_motion.y * -0.0022, 0, 0))
 
-		
 	if not is_on_floor():
 		velocity.y -= gravity * _delta
 	
@@ -113,3 +111,14 @@ func _on_current_render_distance_changed(value:int):
 		can_move = true
 	else :
 		can_move = false
+
+
+func _get_data_to_save() -> Dictionary:
+	return {
+		"mouse_motion" : _mouse_motion,
+		"position" : position
+	}
+
+func _set_data_from_save(dictionary:Dictionary) -> void:
+	_mouse_motion = dictionary["mouse_motion"]
+	position = dictionary["position"]

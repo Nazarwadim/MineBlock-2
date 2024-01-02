@@ -1,8 +1,4 @@
-using System.Windows.Markup;
 using Godot;
-using ProcedureGeneration;
-
-
 public partial class ChunkStaticBody : StaticBody3D
 {
     public MeshInstance3D MeshInstance{get;set;}
@@ -17,9 +13,34 @@ public partial class ChunkStaticBody : StaticBody3D
         };
     }
 
+    public ChunkStaticBody(MeshInstance3D meshInstance3D, CollisionShape3D collisionShape3Dshape, Vector3 position) : this()
+    {
+        MeshInstance = meshInstance3D;
+        ColisionShape = collisionShape3Dshape;
+        Position = position;
+    }
+
+    public ChunkStaticBody(Vector3 position) : this()
+    {
+        Position = position;
+    }
+    public ChunkStaticBody(Mesh mesh, Vector3 position) : this(position)
+    {
+        MeshInstance = new()
+        {
+            Mesh = mesh
+        };
+        
+    }
+    public ChunkStaticBody()
+    {
+        CollisionLayer = 3;
+        InputRayPickable = false;
+    }
     public void SetNewMesh(Mesh mesh)
     {
         MeshInstance.QueueFree();
+        GD.Print("aboba");
         MeshInstance = new()
         {
             Mesh = mesh,
@@ -29,29 +50,9 @@ public partial class ChunkStaticBody : StaticBody3D
         AddChild(MeshInstance);
     }
 
-    public ChunkStaticBody(MeshInstance3D meshInstance3D, CollisionShape3D collisionShape3Dshape, Vector3 position)
-    {
-        MeshInstance = meshInstance3D;
-        ColisionShape = collisionShape3Dshape;
-        Position = position;
-    }
-
-    public ChunkStaticBody(Vector3 position)
-    {
-        Position = position;
-    }
-    public ChunkStaticBody(Mesh mesh, Vector3 position)
-    {
-        MeshInstance = new()
-        {
-            Mesh = mesh
-        };
-        Position = position;
-    }
-    
     public override void _Ready()
     {
-        CollisionLayer = 3;
+        
         MeshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.DoubleSided;
         if(ColisionShape == null)
         {
@@ -62,9 +63,6 @@ public partial class ChunkStaticBody : StaticBody3D
             MeshInstance = new();
         }
         MeshInstance.MaterialOverride = _MATERIAL_OVERRIDE;
-
-        
-        Vector3 _size = new (ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT,ChunkDataGenerator.CHUNK_SIZE);
         
         AddChild(ColisionShape);
         AddChild(MeshInstance);
