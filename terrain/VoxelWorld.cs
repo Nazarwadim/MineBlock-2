@@ -56,10 +56,12 @@ public partial class VoxelWorld : Node
             GetTree().Quit();
         }
         ChunkDataGenerator.Seed = Seed;
+        
+        _worldEnvironment.Environment.SdfgiCascades = Mathf.Clamp( (int)Math.Log2(RenderDistance), 2, 4);
         _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
         Signal signal = (Signal)_generationRelativePlayer.Call("get_position_XY_changed");
         _generationRelativePlayer.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged));
-        
+                
         ChildEnteredTree += (Node node) => {
             int _reloadDistance = (int)(_worldEnvironment.Environment.SdfgiMaxDistance * _worldEnvironment.Environment.SdfgiMaxDistance / (2 * ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_SIZE));
             if(ChunksBodies.Count == _reloadDistance)
