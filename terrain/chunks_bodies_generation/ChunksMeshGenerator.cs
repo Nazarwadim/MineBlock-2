@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.Linq;
 using Godot;
 using Godot.Collections;
@@ -387,6 +388,7 @@ namespace ChunkBodyGeneration
                     }
                 }
             }
+            
 
         }
         
@@ -396,10 +398,12 @@ namespace ChunkBodyGeneration
             Vector3[] verts = ChunkBodyGenerator.CalculateBlockVerts(blockSubPosition);
             Vector2[] uvs = CalculateBlockUvs((long)blockId);
 
-            Vector2[] top_uvs = uvs;
-            Vector2[] bottom_uvs = uvs;
-
-
+            Vector2[] uvsFront = uvs;
+            Vector2[] uvsBack = uvs;
+            Vector2[] uvsLeft = uvs;
+            Vector2[] uvsRight = uvs;
+            Vector2[] uvsTop = uvs;
+            Vector2[] uvsBottom = uvs;
 
 
             if (blockId == ChunkDataGenerator.BlockTypes.WitheredGrass || blockId == ChunkDataGenerator.BlockTypes.Grass)
@@ -415,68 +419,65 @@ namespace ChunkBodyGeneration
                 return;
             }
 
-            if (blockId == ChunkDataGenerator.BlockTypes.Grass)
-            {
-                top_uvs = (Vector2[])CalculateBlockUvs(0).Clone();
-                bottom_uvs = (Vector2[])CalculateBlockUvs(2).Clone();
-            }
-            else if (blockId == ChunkDataGenerator.BlockTypes.Furnace)
-            {
-                top_uvs = (Vector2[])CalculateBlockUvs(31).Clone();
-                bottom_uvs = top_uvs;
-            }
+            
             switch (blockId)
             {
                 case ChunkDataGenerator.BlockTypes.GrassBlock:
-                    top_uvs = (Vector2[])CalculateBlockUvs(0).Clone();
-                    bottom_uvs = (Vector2[])CalculateBlockUvs(2).Clone();
+                    uvsTop = (Vector2[])CalculateBlockUvs(0).Clone();
+                    uvsBottom = (Vector2[])CalculateBlockUvs(2).Clone();
                     break;
                 case ChunkDataGenerator.BlockTypes.Furnace:
-                    top_uvs = (Vector2[])CalculateBlockUvs(31).Clone();
-                    bottom_uvs = top_uvs;
+                    uvsTop = (Vector2[])CalculateBlockUvs(31).Clone();
+                    uvsBottom = uvsTop;
                     break;
-                case ChunkDataGenerator.BlockTypes.Log:
-                    top_uvs = CalculateBlockUvs(30);
-                    bottom_uvs = top_uvs;
+                case ChunkDataGenerator.BlockTypes.LogUp:
+                    uvsTop = CalculateBlockUvs(30);
+                    uvsBottom = uvsTop;
+                    break;
+                case ChunkDataGenerator.BlockTypes.LogX:
+                    uvsBack =uvsFront = uvsTop = uvsBottom = _Rotate90DegreesUvs( CalculateBlockUvs((int)ChunkDataGenerator.BlockTypes.LogUp));
+                    break;
+                case ChunkDataGenerator.BlockTypes.LogZ:
+                    uvsBottom = uvsTop = CalculateBlockUvs((int)ChunkDataGenerator.BlockTypes.LogUp);
+                    uvsRight =  uvsLeft = _Rotate90DegreesUvs(uvsBottom);
+                    uvsBack = uvsFront =  CalculateBlockUvs(30);
                     break;
                 case ChunkDataGenerator.BlockTypes.BookShelf:
-                    top_uvs = CalculateBlockUvs(4);
-                    bottom_uvs = top_uvs;
+                    uvsTop = CalculateBlockUvs(4);
+                    uvsBottom = uvsTop;
                     break;
             }
-
-
 
 
             if (sidesToDraw[(int)BlockSides.Left])
             {
                 Vector3[] verts1_ = { verts[2], verts[0], verts[3], verts[1] };
-                DrawBlockFace(surfaceTool, verts1_, uvs);
+                DrawBlockFace(surfaceTool, verts1_, uvsLeft);
             }
             if (sidesToDraw[(int)BlockSides.Right])
             {
                 Vector3[] verts2_ = { verts[7], verts[5], verts[6], verts[4] };
-                DrawBlockFace(surfaceTool, verts2_, uvs);
+                DrawBlockFace(surfaceTool, verts2_, uvsRight);
             }
             if (sidesToDraw[(int)BlockSides.Front])
             {
                 Vector3[] verts3_ = { verts[6], verts[4], verts[2], verts[0] };
-                DrawBlockFace(surfaceTool, verts3_, uvs);
+                DrawBlockFace(surfaceTool, verts3_, uvsFront);
             }
             if (sidesToDraw[(int)BlockSides.Back])
             {
                 Vector3[] verts4_ = { verts[3], verts[1], verts[7], verts[5] };
-                DrawBlockFace(surfaceTool, verts4_, uvs);
+                DrawBlockFace(surfaceTool, verts4_, uvsBack);
             }
             if (sidesToDraw[(int)BlockSides.Up])
             {
                 Vector3[] verts5_ = { verts[2], verts[3], verts[6], verts[7] };
-                DrawBlockFace(surfaceTool, verts5_, top_uvs);
+                DrawBlockFace(surfaceTool, verts5_, uvsTop);
             }
             if (sidesToDraw[(int)BlockSides.Down])
             {
                 Vector3[] verts6_ = { verts[4], verts[5], verts[0], verts[1] };
-                DrawBlockFace(surfaceTool, verts6_, bottom_uvs);
+                DrawBlockFace(surfaceTool, verts6_, uvsBottom);
             }
 
         }
@@ -501,6 +502,15 @@ namespace ChunkBodyGeneration
             _DrawBlockMesh(surfaceTool,blockSubPosition,blockId,bools);
         }
 
+        private static Vector2[] _Rotate90DegreesUvs(Vector2[] uvs)
+        {
+            Vector2[] tempUvs = (Vector2[])uvs.Clone();
+            tempUvs[0] = uvs[2];
+            tempUvs[1] = uvs[0];
+            tempUvs[2] = uvs[3];
+            tempUvs[3] = uvs[1];
+            return tempUvs;
+        }
         public static Vector2[] CalculateBlockUvs(long blockId)
         {
             long row = blockId / TEXTURE_SHEET_WIDTH;
@@ -518,6 +528,7 @@ namespace ChunkBodyGeneration
         {
             return blockId == ChunkDataGenerator.BlockTypes.Air || ((int)blockId > 25 && (int)blockId < 30);
         }
+        
     }
 }
 

@@ -68,7 +68,12 @@ func _physics_process(delta):
 				if block_pos_set != _block_pos_set_before:
 					await get_tree().create_timer(delta + 0.01).timeout
 				if not $BlockToPlaseArea.overlaps_body(self):
-					_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, 12)
+					if ray_normal.y != 0:
+						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.LogUp)
+					elif ray_normal.x != 0:
+						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.LogX)
+					elif ray_normal.z != 0:
+						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.LogZ)
 			else :
 				printerr("You've gone beyond the height limit")
 		_block_pos_set_before = block_pos_set

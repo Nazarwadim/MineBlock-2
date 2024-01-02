@@ -149,10 +149,15 @@ public partial class ChunkUpdater : Node
 
     }
 
-    //Summary:
-    //  Check if can generate mesh
-    // Returns:
-    //     Whether or not generated.
+    /// <summary>
+    /// Check if can generate mesh
+    /// </summary>
+    /// <param name="chunkPosition">
+    /// Chunk relative position. Real position is Vector3(chunkPosition.x, 0, chunkPosition.y) * Chunk_SIZE
+    /// </param>
+    /// <returns>
+    ///     Whether or not generated
+    /// </returns>
     private bool _TryGenerateChunkResource(Vector2I chunkPosition)
     {
         if (_voxelWorld.ChunksResources.ContainsKey(chunkPosition)) return false;

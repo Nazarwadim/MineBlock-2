@@ -14,7 +14,7 @@ enum BlockTypes
 	Deepslate,
 	Sand,
 	Gravel,
-	Log,
+	LogUp,
 	DiamondBlock,
 	IronBlock,
 	GoldBlock,
@@ -31,5 +31,7 @@ enum BlockTypes
 	BirchLeaves,
 	Grass,
 	WitheredGrass,
-	Glass
+	Glass,
+	LogX,
+	LogZ
 }

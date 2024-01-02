@@ -29,7 +29,7 @@ namespace ProcedureGeneration
             Deepslate,
             Sand,
             Gravel,
-            Log,
+            LogUp,
             DiamondBlock,
             IronBlock,
             GoldBlock,
@@ -46,7 +46,9 @@ namespace ProcedureGeneration
             BirchLeaves,
             Grass,
             WitheredGrass,
-            Glass
+            Glass,
+            LogX,
+            LogZ
         }
         public const short CHUNK_SIZE = 16;
         public const short CHUNK_HEIGHT = 255;
