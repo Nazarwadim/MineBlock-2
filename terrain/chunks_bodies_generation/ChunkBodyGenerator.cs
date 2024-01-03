@@ -30,7 +30,10 @@ namespace ChunkBodyGeneration
         {
 			return ChunksMeshGenerator.GenerateChunkMesh(chunkResource, chunksResources);
 		}
-
+		public static bool IsBlockNotStatic(ChunkDataGenerator.BlockTypes blockType)
+		{
+			return blockType == ChunkDataGenerator.BlockTypes.Air || blockType == ChunkDataGenerator.BlockTypes.Water;
+		}
 
 		public static Vector3[] CalculateBlockVerts(Vector3 blockPosition)
 		{

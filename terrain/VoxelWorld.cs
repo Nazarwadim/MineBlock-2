@@ -4,13 +4,13 @@ using ChunkBodyGeneration;
 using ProcedureGeneration;
 using System;
 using System.Threading.Tasks;
-using ChunksSerealization;
+using ChunksSerialization;
 using System.Dynamic;
 [GlobalClass]
 public partial class VoxelWorld : Node
 {
     [Signal] public delegate void MiddleChunkPositionChangedEventHandler(Vector2I position);
-    [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
+    [Signal] public delegate void CurrentRenderDistanceChangedEventHandler(int currentRenderDistance);
 
     public VoxelWorld()
     {
@@ -58,9 +58,9 @@ public partial class VoxelWorld : Node
         ChunkDataGenerator.Seed = Seed;
         
         _worldEnvironment.Environment.SdfgiCascades = Mathf.Clamp( (int)Math.Log2(RenderDistance), 2, 4);
-        _chunkUpdater.CurrentRenderDistanseChanged += _OnCurrentRenderDistanceChanged;
+        _chunkUpdater.CurrentRenderDistanceChanged += _OnCurrentRenderDistanceChanged;
         Signal signal = (Signal)_generationRelativePlayer.Call("get_position_XY_changed");
-        _generationRelativePlayer.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositioXYChanged));
+        _generationRelativePlayer.Connect(signal.Name, new Callable(this, MethodName._OnPlayerPositionXYChanged));
                 
         ChildEnteredTree += (Node node) => {
             int _reloadDistance = (int)(_worldEnvironment.Environment.SdfgiMaxDistance * _worldEnvironment.Environment.SdfgiMaxDistance / (2 * ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_SIZE));
@@ -72,10 +72,10 @@ public partial class VoxelWorld : Node
     }
     private void _OnCurrentRenderDistanceChanged(int renderDistance)
     {
-        EmitSignal(SignalName.CurrentRenderDistanseChanged,renderDistance);
+        EmitSignal(SignalName.CurrentRenderDistanceChanged,renderDistance);
     }
     
-    private void _OnPlayerPositioXYChanged(Vector2I position)
+    private void _OnPlayerPositionXYChanged(Vector2I position)
     {
         
         Vector2I chunkPos = GetChunkGlobalPositionFromBlockGlobalPosition(position);
@@ -142,9 +142,9 @@ public partial class VoxelWorld : Node
         {
             return chunkResource.Data[x - chunkPosition.X * ChunkDataGenerator.CHUNK_SIZE, y, z - chunkPosition.Y * ChunkDataGenerator.CHUNK_SIZE];
         }
-        if(_chunkUpdater.CurrentRenderDistanse < RenderDistance - 2)
+        if(_chunkUpdater.CurrentRenderDistance < RenderDistance - 2)
         {
-            throw new Exception("Not exist resourse near your chunk to draw!.");
+            throw new Exception("Not exist resource near your chunk to draw!.");
         }
         return ChunkDataGenerator.BlockTypes.CobbleStone;
     }

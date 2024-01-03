@@ -13,7 +13,7 @@ script = ExtResource("1_m12kp")
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "_generationRelativePlayer", "_chunkUpdater")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 4
+RenderDistance = 15
 _worldEnvironment = NodePath("../WorldEnvironment")
 _generationRelativePlayer = NodePath("../Player")
 _chunkUpdater = NodePath("ChunkUpdater")

@@ -2,21 +2,21 @@ using Godot;
 public partial class ChunkStaticBody : StaticBody3D
 {
     public MeshInstance3D MeshInstance{get;set;}
-    public CollisionShape3D ColisionShape{get;set;}
+    public CollisionShape3D CollisionShape{get;set;}
 
     private static readonly Material _MATERIAL_OVERRIDE  = GD.Load<Material>("res://textures/material.tres");
     public ChunkStaticBody(Mesh mesh, Shape3D shape, Vector3 position) : this(mesh,position)
     {
-        ColisionShape = new()
+        CollisionShape = new()
         {
             Shape = shape
         };
     }
 
-    public ChunkStaticBody(MeshInstance3D meshInstance3D, CollisionShape3D collisionShape3Dshape, Vector3 position) : this()
+    public ChunkStaticBody(MeshInstance3D meshInstance3D, CollisionShape3D collisionShape3Shape, Vector3 position) : this()
     {
         MeshInstance = meshInstance3D;
-        ColisionShape = collisionShape3Dshape;
+        CollisionShape = collisionShape3Shape;
         Position = position;
     }
 
@@ -54,9 +54,9 @@ public partial class ChunkStaticBody : StaticBody3D
     {
         
         MeshInstance.CastShadow = GeometryInstance3D.ShadowCastingSetting.DoubleSided;
-        if(ColisionShape == null)
+        if(CollisionShape == null)
         {
-            ColisionShape = new ();
+            CollisionShape = new ();
         }
         if(MeshInstance == null)
         {
@@ -64,7 +64,7 @@ public partial class ChunkStaticBody : StaticBody3D
         }
         MeshInstance.MaterialOverride = _MATERIAL_OVERRIDE;
         
-        AddChild(ColisionShape);
+        AddChild(CollisionShape);
         AddChild(MeshInstance);
 
         

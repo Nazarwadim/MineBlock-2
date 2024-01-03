@@ -87,7 +87,7 @@ namespace ChunkBodyGeneration
                     {
 
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, j, k];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -129,7 +129,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -153,7 +153,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -186,7 +186,7 @@ namespace ChunkBodyGeneration
                     for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -216,7 +216,7 @@ namespace ChunkBodyGeneration
                     for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (blockId == 0)
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -273,7 +273,7 @@ namespace ChunkBodyGeneration
                     for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, i];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -311,7 +311,7 @@ namespace ChunkBodyGeneration
                     {
 
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, y, z];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -350,7 +350,7 @@ namespace ChunkBodyGeneration
                     for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if (blockId == ChunkDataGenerator.BlockTypes.Air)
+                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }

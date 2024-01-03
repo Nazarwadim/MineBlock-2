@@ -15,6 +15,7 @@ sky = SubResource("Sky_u6213")
 sky_rotation = Vector3(0, 0.20944, 0)
 tonemap_mode = 2
 sdfgi_enabled = true
+sdfgi_cascades = 2
 sdfgi_min_cell_size = 0.25
 sdfgi_energy = 1.1
 glow_enabled = true

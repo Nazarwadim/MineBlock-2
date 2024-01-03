@@ -4,16 +4,16 @@ using System;
 using System.Threading;
 using ProcedureGeneration;
 using ChunkBodyGeneration;
-using ChunksSerealization;
+using ChunksSerialization;
 
 using Generic = System.Collections.Generic;
 
 [GlobalClass]
 public partial class ChunkUpdater : Node
 {
-    [Signal] public delegate void CurrentRenderDistanseChangedEventHandler(int currentRenderDistanse);
+    [Signal] public delegate void CurrentRenderDistanceChangedEventHandler(int currentRenderDistance);
     
-    public int CurrentRenderDistanse { get; private set; }
+    public int CurrentRenderDistance { get; private set; }
     public ChunkUpdater()
     {
         _mtxDic = new();
@@ -36,10 +36,10 @@ public partial class ChunkUpdater : Node
             GD.PrintErr("Can`t create ChunkUpdater when parent isn`t VoxelWorld!!! ChunkUpdater.cs Ready()");
             GetTree().Quit();
         }
-        _voxelWorld.MiddleChunkPositionChanged += _OnMidleChunkPositionChanged;
+        _voxelWorld.MiddleChunkPositionChanged += _OnMiddleChunkPositionChanged;
     }
 
-    private void _OnMidleChunkPositionChanged(Vector2I chunk_position)
+    private void _OnMiddleChunkPositionChanged(Vector2I chunk_position)
     {
         _middleChunkPos = chunk_position;
         _UpdateChunks();
@@ -132,9 +132,9 @@ public partial class ChunkUpdater : Node
 
                 if (generatedMeshes > cur_render && cur_render >= 0)
                 {
-                    CurrentRenderDistanse = (int)cur_render;
+                    CurrentRenderDistance = (int)cur_render;
 
-                    CallDeferred("emit_signal", SignalName.CurrentRenderDistanseChanged, cur_render);
+                    CallDeferred("emit_signal", SignalName.CurrentRenderDistanceChanged, cur_render);
                 }
             }
             _RemoveFarChunksBodies();
@@ -245,7 +245,7 @@ public partial class ChunkUpdater : Node
     private void _SetChunkBodyMeshAndShape(ChunkStaticBody chunkStaticBody, Mesh mesh, Shape3D shape3D)
     {
         chunkStaticBody.SetNewMesh(mesh);
-        chunkStaticBody.ColisionShape.Shape = shape3D;
+        chunkStaticBody.CollisionShape.Shape = shape3D;
     }
 
     private void _RemoveChunkBody(Vector2I chunkPosition)

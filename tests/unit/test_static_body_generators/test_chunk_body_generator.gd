@@ -29,3 +29,7 @@ func test_CalculateBlockVerts():
 	  
 	assert_eq(result1, expected1)
 	assert_eq(result2, expected2)
+
+func test_IsBlockNotStatic():
+	var result = chunk_body_generator.IsBlockNotStatic(ChunkBlocks.BlockTypes.Water) and chunk_body_generator.IsBlockNotStatic(ChunkBlocks.BlockTypes.Air)
+	assert_true(result)

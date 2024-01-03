@@ -48,7 +48,8 @@ namespace ProcedureGeneration
             WitheredGrass,
             Glass,
             LogX,
-            LogZ
+            LogZ,
+            Water
         }
         public const short CHUNK_SIZE = 16;
         public const short CHUNK_HEIGHT = 255;
@@ -191,6 +192,18 @@ namespace ProcedureGeneration
                             }
                         }  
                         }
+                    
+                }
+            }
+            for(int x = 0; x < CHUNK_SIZE; ++x)
+            {
+                int y = 63;
+                for(int z = 0; z < CHUNK_SIZE; ++z)
+                {
+                    if(chunk[x, y ,z] == (byte)BlockTypes.Air)
+                    {
+                        chunk[x,y,z] = (byte)BlockTypes.Water;
+                    }
                     
                 }
             }

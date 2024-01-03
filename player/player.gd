@@ -77,7 +77,7 @@ func _physics_process(delta):
 			else :
 				printerr("You've gone beyond the height limit")
 		_block_pos_set_before = block_pos_set
-	else :
+	else:
 		$BlockToRemoveArea.visible = false	
 		$BlockToPlaseArea.visible = false
 			

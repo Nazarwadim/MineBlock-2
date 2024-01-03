@@ -33,5 +33,6 @@ enum BlockTypes
 	WitheredGrass,
 	Glass,
 	LogX,
-	LogZ
+	LogZ,
+	Water
 }

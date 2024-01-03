@@ -34,7 +34,7 @@ movie_writer/movie_file="/home/klever2282/GodotProgects/ChunkUpdate2.avi"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/finite_state_machine/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/inventory-system/plugin.cfg")
+enabled=PackedStringArray("res://addons/boujie_water_shader/plugin.cfg", "res://addons/finite_state_machine/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/inventory-system/plugin.cfg")
 
 [input]
 

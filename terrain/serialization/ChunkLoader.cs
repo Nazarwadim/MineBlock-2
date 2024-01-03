@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace ChunksSerealization
+namespace ChunksSerialization
 {
     public partial class ChunkLoader : GodotObject
     {
