@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 using Godot;
 using Godot.Collections;
 
-namespace ChunksSerealization
+namespace ChunksSerialization
 {
     public partial class ChunkSaver : GodotObject
     {

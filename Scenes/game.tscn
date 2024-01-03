@@ -1,6 +1,5 @@
-[gd_scene load_steps=7 format=3 uid="uid://cft5uj8g6a10"]
+[gd_scene load_steps=6 format=3 uid="uid://cft5uj8g6a10"]
 
-[ext_resource type="Script" path="res://Scenes/game.gd" id="1_m12kp"]
 [ext_resource type="Script" path="res://terrain/VoxelWorld.cs" id="2_yr4dd"]
 [ext_resource type="Script" path="res://terrain/ChunkUpdater.cs" id="3_1pd3j"]
 [ext_resource type="Environment" uid="uid://bp1x2t1tkv70j" path="res://environments/game.tres" id="4_6g0yj"]
@@ -8,12 +7,11 @@
 [ext_resource type="Script" path="res://terrain/serialization/GameSerializer.cs" id="6_dphca"]
 
 [node name="Game" type="Node"]
-script = ExtResource("1_m12kp")
 
 [node name="VoxelWorld" type="Node" parent="." node_paths=PackedStringArray("_worldEnvironment", "_generationRelativePlayer", "_chunkUpdater")]
 script = ExtResource("2_yr4dd")
 Seed = 1
-RenderDistance = 15
+RenderDistance = 30
 _worldEnvironment = NodePath("../WorldEnvironment")
 _generationRelativePlayer = NodePath("../Player")
 _chunkUpdater = NodePath("ChunkUpdater")

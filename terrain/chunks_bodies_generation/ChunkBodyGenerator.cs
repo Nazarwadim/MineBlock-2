@@ -11,7 +11,7 @@ namespace ChunkBodyGeneration
 
 	public partial class ChunkBodyGenerator : GodotObject
 	{
-		//Dont Add or remove elements, this will couse serious error!
+		//Don't Add or remove elements, this will cause serious error!
 		public enum BlockSide
 		{
 			Front,

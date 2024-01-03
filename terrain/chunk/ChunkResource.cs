@@ -1,7 +1,7 @@
 using System;
 using Godot;
 using ProcedureGeneration;
-using ChunksSerealization;
+using ChunksSerialization;
 
 // Summary:
 //     This is Chunk container resource that can be saved.
@@ -19,7 +19,7 @@ public partial class ChunkResource : Resource
     //     Create chunk without blocks
     public ChunkResource() { }
 
-    public void CopyFromOneDimentionalIntoThreeDimentional()
+    public void CopyFromOneDimensionalIntoThreeDimensional()
     {
         Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
         Buffer.BlockCopy(_data, 0, Data, 0, _data.Length);

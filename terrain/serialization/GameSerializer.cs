@@ -1,6 +1,6 @@
 using Godot;
 
-namespace ChunksSerealization
+namespace ChunksSerialization
 {
     [GlobalClass]
     public partial class GameSerializer : Node

@@ -3,7 +3,7 @@ using Godot;
 using ProcedureGeneration;
 using System;
 
-public partial class Terain : Node
+public partial class Terrain : Node
 {
     public override void _Ready()
     {
