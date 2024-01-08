@@ -1,6 +1,6 @@
 using Godot;
 
-namespace ChunksSerialization
+namespace Terrain.ChunksSerialization
 {
     [GlobalClass]
     public partial class GameSerializer : Node
@@ -11,15 +11,15 @@ namespace ChunksSerialization
 
         [Export] private VoxelWorld _voxelWorld;
         [Export] private CharacterBody3D _player;
-        [Export] public bool IsWorking{get; private set;}
+        [Export] public bool IsWorking { get; private set; }
         public override void _Ready()
         {
-            if(_voxelWorld == null)
+            if (_voxelWorld == null)
             {
                 GD.PrintErr("Set VoxelWorld in ChunkSerializer");
                 GetTree().Quit();
             }
-            if(_player == null)
+            if (_player == null)
             {
                 GD.PrintErr("Set player in ChunkSerializer");
                 GetTree().Quit();
@@ -27,7 +27,7 @@ namespace ChunksSerialization
             CreateGameDirectoriesOrNothing();
             _LoadPlayer();
         }
-        
+
         private void _LoadPlayer()
         {
             string _savePath = BASE_WORLDS_PATH + _voxelWorld.WorldName + '/';
@@ -44,12 +44,12 @@ namespace ChunksSerialization
 
         public void CreateGameDirectoriesOrNothing()
         {
-            if(!DirAccess.DirExistsAbsolute(BASE_WORLDS_PATH.Remove(BASE_WORLDS_PATH.Length - 1)))
+            if (!DirAccess.DirExistsAbsolute(BASE_WORLDS_PATH.Remove(BASE_WORLDS_PATH.Length - 1)))
             {
                 DirAccess.MakeDirAbsolute(BASE_WORLDS_PATH.Remove(BASE_WORLDS_PATH.Length - 1));
             }
 
-            if(!DirAccess.DirExistsAbsolute(BASE_WORLDS_PATH + _voxelWorld.WorldName))
+            if (!DirAccess.DirExistsAbsolute(BASE_WORLDS_PATH + _voxelWorld.WorldName))
             {
                 DirAccess.MakeDirAbsolute(BASE_WORLDS_PATH + _voxelWorld.WorldName);
                 DirAccess.MakeDirAbsolute(BASE_WORLDS_PATH + _voxelWorld.WorldName + "/" + PLAYER_DIR);

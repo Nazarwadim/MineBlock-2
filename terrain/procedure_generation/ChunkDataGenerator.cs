@@ -5,7 +5,7 @@ using Godot;
 using Godot.Collections;
 
 
-namespace ProcedureGeneration
+namespace Terrain.ProcedureGeneration
 {
     public partial class ChunkDataGenerator : GodotObject
     {
@@ -60,7 +60,7 @@ namespace ProcedureGeneration
 #pragma warning restore CA2211 // Non-constant fields should not be visible
         public const float RANDOM_TO_GENERATE_BLOCK = 0.05f;
         private static readonly PerlineNoise _noise = new((int)Seed);
-        public static ulong Seed = 0;
+        public static ulong Seed = 1;
 
         public static BlockTypes[,,] GetRandomChunk()
         {
@@ -108,11 +108,11 @@ namespace ProcedureGeneration
         public static byte[,,] GetChunkWithTerrain(Vector2I chunkPosition, byte[,] chunk_heights)
         {
             byte[,,] chunk = new byte[CHUNK_SIZE, CHUNK_HEIGHT, CHUNK_SIZE];
-            for(int x = 0 ; x < CHUNK_SIZE; ++x)
+            for (int x = 0; x < CHUNK_SIZE; ++x)
             {
-                for(int z = 0; z < CHUNK_SIZE; ++z)
+                for (int z = 0; z < CHUNK_SIZE; ++z)
                 {
-                    chunk[x,0,z] = (byte)BlockTypes.Obsidian;       
+                    chunk[x, 0, z] = (byte)BlockTypes.Obsidian;
                 }
             }
             for (ulong x = 0; x < (long)CHUNK_SIZE; ++x)
@@ -139,17 +139,17 @@ namespace ProcedureGeneration
                     {
                         chunk[x, y, z] = (byte)BlockTypes.Furnace;
                     }
-                    else if (z >=4 && z < CHUNK_SIZE -4 && x >= 4 && x < CHUNK_SIZE - 4 &&  
+                    else if (z >= 4 && z < CHUNK_SIZE - 4 && x >= 4 && x < CHUNK_SIZE - 4 &&
                         y < Mathf.Remap(random.Randf(), 0, 1, 130, 255) && random.Randf() < 0.08f)
                     {
                         int radius = (int)random.Randi() % 2 + 1;
                         BlockTypes blockType;
                         float rand = random.Randf();
-                        if(rand < 0.6f)
+                        if (rand < 0.6f)
                         {
                             blockType = BlockTypes.Coal;
                         }
-                        else if(rand < 0.9f)
+                        else if (rand < 0.9f)
                         {
                             blockType = BlockTypes.CopperOre;
                         }
@@ -157,54 +157,54 @@ namespace ProcedureGeneration
                         {
                             blockType = BlockTypes.IronOre;
                         }
-                        for(long iy = -radius; iy < radius; ++iy)
+                        for (long iy = -radius; iy < radius; ++iy)
                         {
                             long dx = (int)Mathf.Sqrt(radius * radius - iy * iy);
-                            for(long ix = - dx; ix < dx; ++ix)
+                            for (long ix = -dx; ix < dx; ++ix)
                             {
-                                if((long)x + ix >= CHUNK_SIZE || (long)z + iy >=CHUNK_SIZE) GD.Print(x, y);
-                                chunk[ (long)x + ix, chunk_heights[(long)x + ix,(long)z + iy],(long)z + iy] = (byte)blockType;
-                                
+                                if ((long)x + ix >= CHUNK_SIZE || (long)z + iy >= CHUNK_SIZE) GD.Print(x, y);
+                                chunk[(long)x + ix, chunk_heights[(long)x + ix, (long)z + iy], (long)z + iy] = (byte)blockType;
+
                             }
                         }
                     }
                 }
             }
-            for(long i = 3; i < CHUNK_SIZE - 3; ++i)
+            for (long i = 3; i < CHUNK_SIZE - 3; ++i)
             {
-                for(long j = 3; j < CHUNK_SIZE -3; ++j)
+                for (long j = 3; j < CHUNK_SIZE - 3; ++j)
                 {
-                    if(chunk_heights[i,j] < 110)
+                    if (chunk_heights[i, j] < 110)
                     {
-                        if(random.Randf() > 0.2f)
+                        if (random.Randf() > 0.2f)
                         {
                             continue;
                         }
 
                         uint radius = random.Randi() % 3 + 1;
-                        
-                        for(int iy = -(int)radius; iy < radius; ++iy)
+
+                        for (int iy = -(int)radius; iy < radius; ++iy)
                         {
                             int dx = (int)Mathf.Sqrt(radius * radius - iy * iy);
-                            for(int ix = - dx; ix < dx; ++ix)
+                            for (int ix = -dx; ix < dx; ++ix)
                             {
-                                chunk[ i+ ix, chunk_heights[i + ix,j + iy] + 1,j + iy] = (byte)BlockTypes.Grass;
+                                chunk[i + ix, chunk_heights[i + ix, j + iy] + 1, j + iy] = (byte)BlockTypes.Grass;
                             }
-                        }  
                         }
-                    
+                    }
+
                 }
             }
-            for(int x = 0; x < CHUNK_SIZE; ++x)
+            for (int x = 0; x < CHUNK_SIZE; ++x)
             {
                 int y = 63;
-                for(int z = 0; z < CHUNK_SIZE; ++z)
+                for (int z = 0; z < CHUNK_SIZE; ++z)
                 {
-                    if(chunk[x, y ,z] == (byte)BlockTypes.Air)
+                    if (chunk[x, y, z] == (byte)BlockTypes.Air)
                     {
-                        chunk[x,y,z] = (byte)BlockTypes.Water;
+                        chunk[x, y, z] = (byte)BlockTypes.Water;
                     }
-                    
+
                 }
             }
             return chunk;

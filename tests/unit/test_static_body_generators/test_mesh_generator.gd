@@ -76,11 +76,11 @@ func test_GenerateChunkMesh():
 	var down_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(0, -1).res")
 	var right_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(1, 0).res")
 	var left_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(-1, 0).res")
-	midle_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	up_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	down_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	right_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	left_chunk.CopyFromOneDimentionalIntoThreeDimentional()
+	midle_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	up_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	down_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	right_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	left_chunk.CopyFromOneDimensionalIntoThreeDimensional()
 	var chunkres:ChunkResource = ChunkResource.new()
 	var chunk_resources := {midle_chunk.Position : midle_chunk,
 						up_chunk.Position : up_chunk,

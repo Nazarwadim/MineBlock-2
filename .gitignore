@@ -5,3 +5,4 @@ example/
 **/*.bin
 **/*.shape
 *.res
+terrain/procedure_generation/BiomeGeneration/

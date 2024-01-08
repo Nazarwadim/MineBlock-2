@@ -1,13 +1,15 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Godot;
 using Godot.Collections;
-using ProcedureGeneration;
 
-using BlockSides = ChunkBodyGeneration.ChunkBodyGenerator.BlockSide;
-namespace ChunkBodyGeneration
+
+
+namespace Terrain.ChunkBodyGeneration
 {
-
+    using ProcedureGeneration;
+    using BlockSides = ChunkBodyGenerator.BlockSide;
     public partial class ChunkShapeGenerator : GodotObject
     {
         public const short CHUNK_SIZE = ChunkDataGenerator.CHUNK_SIZE;
@@ -109,7 +111,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -132,7 +134,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -165,7 +167,7 @@ namespace ChunkBodyGeneration
                     for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -252,7 +254,7 @@ namespace ChunkBodyGeneration
                     for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, i];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -288,7 +290,7 @@ namespace ChunkBodyGeneration
                     {
 
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, y, z];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -327,7 +329,7 @@ namespace ChunkBodyGeneration
                     for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                       if (IsBlockNotCollide(blockId))
+                        if (IsBlockNotCollide(blockId))
                         {
                             continue;
                         }
@@ -408,13 +410,7 @@ namespace ChunkBodyGeneration
 
         private static void _SetBlockCollisionTriangle(System.Collections.Generic.List<Vector3> points, Vector3[] verts)
         {
-            points.Add(verts[1]);
-            points.Add(verts[2]);
-            points.Add(verts[3]);
-
-            points.Add(verts[2]);
-            points.Add(verts[1]);
-            points.Add(verts[0]);
+            points.AddRange(new Vector3[] { verts[1], verts[2], verts[3], verts[2], verts[1], verts[0] });
         }
 
         private static void _BuildBlockCollision(Array<Vector3> pointsData, Vector3I blockSubPosition, Array<bool> sidesToDraw)

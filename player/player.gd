@@ -21,7 +21,7 @@ var can_move:bool = false
 signal position_XZ_changed(position:Vector2i)
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	_voxel_world.CurrentRenderDistanseChanged.connect(_on_current_render_distance_changed)
+	_voxel_world.CurrentRenderDistanceChanged.connect(_on_current_render_distance_changed)
 	position_XZ_changed.emit(Vector2i(position.x, position.z))
 
 func get_position_XY_changed() ->Signal:
@@ -69,7 +69,7 @@ func _physics_process(delta):
 					await get_tree().create_timer(delta + 0.01).timeout
 				if not $BlockToPlaseArea.overlaps_body(self):
 					if ray_normal.y != 0:
-						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.LogUp)
+						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.Planks)
 					elif ray_normal.x != 0:
 						_voxel_world.SetBlockTypeInGlobalPosition(block_pos_set, ChunkBlocks.BlockTypes.LogX)
 					elif ray_normal.z != 0:

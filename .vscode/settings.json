@@ -4,6 +4,7 @@
         "bools",
         "chanks",
         "Deepslate",
+        "gutconfig",
         "Lacunarity",
         "Mathf",
         "Perlin",
@@ -12,6 +13,7 @@
         "Randf",
         "Sdfgi",
         "Sdfgiy",
+        "subdirs",
         "Usec",
         "verts",
         "Voxel"

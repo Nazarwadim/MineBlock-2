@@ -2,11 +2,10 @@ using Godot;
 
 
 
-namespace ProcedureGeneration
+namespace Terrain.ProcedureGeneration
 {
     public partial class PerlineNoise : FastNoiseLite
     {
-
         public PerlineNoise(int seed)
         {
             NoiseType = NoiseTypeEnum.Perlin;

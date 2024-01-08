@@ -19,14 +19,14 @@ func test_IsBlockNotCollide():
 func test_SetBlockColisionTriangle():
 	var arr:Array[Vector3] = []
 	var verts :PackedVector3Array= [Vector3.ZERO, Vector3.LEFT, Vector3.RIGHT, Vector3.UP]
-	chunks_shape_generator._SetBlockColisionTriangle(arr,verts)
+	chunks_shape_generator._SetBlockCollisionTriangle(arr,verts)
 	var expected:Array = [Vector3(-1, 0, 0), Vector3(1, 0, 0), Vector3(0, 1, 0), Vector3(1, 0, 0), Vector3(-1, 0, 0), Vector3(0, 0, 0)]
 	assert_eq(arr, expected)
 	
 func test_BuildBlockColision():
 	var arr:Array[Vector3] = []
 	var position := Vector3(12,51,89)
-	chunks_shape_generator._BuildBlockColision(arr,position,[false,true,true,false,false,true])
+	chunks_shape_generator._BuildBlockCollision(arr,position,[false,true,true,false,false,true])
 	var expected:Array = [Vector3(12, 51, 89), Vector3(12, 52, 90), Vector3(12, 51, 90),
 		Vector3(12, 52, 90), Vector3(12, 51, 89), Vector3(12, 52, 89), Vector3(12, 51, 90), 
 		Vector3(13, 52, 90), Vector3(13, 51, 90), Vector3(13, 52, 90), Vector3(12, 51, 90), 
@@ -40,11 +40,11 @@ func test_GenerateChunkShape():
 	var down_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(0, -1).res")
 	var right_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(1, 0).res")
 	var left_chunk :ChunkResource= ResourceLoader.load("res://tests/mocks/chunk_resources/Vector2i(-1, 0).res")
-	midle_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	up_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	down_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	right_chunk.CopyFromOneDimentionalIntoThreeDimentional()
-	left_chunk.CopyFromOneDimentionalIntoThreeDimentional()
+	midle_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	up_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	down_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	right_chunk.CopyFromOneDimensionalIntoThreeDimensional()
+	left_chunk.CopyFromOneDimensionalIntoThreeDimensional()
 	var chunk_resources := {midle_chunk.Position : midle_chunk,
 						up_chunk.Position : up_chunk,
 						down_chunk.Position : down_chunk,

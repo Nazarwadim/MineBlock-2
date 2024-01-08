@@ -3,12 +3,12 @@ using System.Drawing;
 using System.Linq;
 using Godot;
 using Godot.Collections;
-using ProcedureGeneration;
 
-using BlockSides = ChunkBodyGeneration.ChunkBodyGenerator.BlockSide;
 
-namespace ChunkBodyGeneration
+namespace Terrain.ChunkBodyGeneration
 {
+    using ProcedureGeneration;
+    using BlockSides = ChunkBodyGenerator.BlockSide;
     public partial class ChunksMeshGenerator : GodotObject
     {
         public static ulong counterTemp = 0;
@@ -60,20 +60,20 @@ namespace ChunkBodyGeneration
             SurfaceTool surfaceTool = new();
             surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 
-            
+
             _GenerateInsideChunkSurfaceTool(surfaceTool, mainDataChunk);
 
             _GenerateUpDownYSurfaceTool(surfaceTool, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
 
             _GenerateChunkSidesSurfaceTool(surfaceTool, chunkResource, leftChunk, rightChunk, downChunk, upChunk);
-            
+
             surfaceTool.GenerateNormals();
             surfaceTool.GenerateTangents();
             surfaceTool.Index();
             ArrayMesh arrayMesh = surfaceTool.Commit();
             return arrayMesh;
         }
-        
+
         private static void _GenerateInsideChunkSurfaceTool(SurfaceTool surfaceTool, ChunkDataGenerator.BlockTypes[,,] mainDataChunk)
         {
             bool[] neighborBlocksAreTransparent = new bool[6];
@@ -85,11 +85,11 @@ namespace ChunkBodyGeneration
                     {
 
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, j, k];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
-                        
+
                         neighborBlocksAreTransparent[(int)BlockSides.Front] = IsBlockTransparent(mainDataChunk[i, j, k - 1]);
                         neighborBlocksAreTransparent[(int)BlockSides.Back] = IsBlockTransparent(mainDataChunk[i, j, k + 1]);
                         neighborBlocksAreTransparent[(int)BlockSides.Left] = IsBlockTransparent(mainDataChunk[i - 1, j, k]);
@@ -127,7 +127,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -151,7 +151,7 @@ namespace ChunkBodyGeneration
                     for (long z = 1; z < CHUNK_SIZE - 1; ++z)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -184,7 +184,7 @@ namespace ChunkBodyGeneration
                     for (long x = 1; x < CHUNK_SIZE - 1; ++x)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -271,7 +271,7 @@ namespace ChunkBodyGeneration
                     for (long y = 1; y < CHUNK_HEIGHT - 1; ++y)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, i];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -309,7 +309,7 @@ namespace ChunkBodyGeneration
                     {
 
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[i, y, z];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -348,7 +348,7 @@ namespace ChunkBodyGeneration
                     for (long z = 0; z < CHUNK_SIZE; z += CHUNK_SIZE - 1)
                     {
                         ChunkDataGenerator.BlockTypes blockId = mainDataChunk[x, y, z];
-                        if(ChunkBodyGenerator.IsBlockNotStatic(blockId))
+                        if (ChunkBodyGenerator.IsBlockNotStatic(blockId))
                         {
                             continue;
                         }
@@ -386,10 +386,10 @@ namespace ChunkBodyGeneration
                     }
                 }
             }
-            
+
 
         }
-        
+
         private static void _DrawBlockMesh(SurfaceTool surfaceTool, Vector3I blockSubPosition, ChunkDataGenerator.BlockTypes blockId, bool[] sidesToDraw)
         {
 
@@ -417,7 +417,7 @@ namespace ChunkBodyGeneration
                 return;
             }
 
-            
+
             switch (blockId)
             {
                 case ChunkDataGenerator.BlockTypes.GrassBlock:
@@ -433,12 +433,12 @@ namespace ChunkBodyGeneration
                     uvsBottom = uvsTop;
                     break;
                 case ChunkDataGenerator.BlockTypes.LogX:
-                    uvsBack =uvsFront = uvsTop = uvsBottom = _Rotate90DegreesUvs( CalculateBlockUvs((int)ChunkDataGenerator.BlockTypes.LogUp));
+                    uvsBack = uvsFront = uvsTop = uvsBottom = _Rotate90DegreesUvs(CalculateBlockUvs((int)ChunkDataGenerator.BlockTypes.LogUp));
                     break;
                 case ChunkDataGenerator.BlockTypes.LogZ:
                     uvsBottom = uvsTop = CalculateBlockUvs((int)ChunkDataGenerator.BlockTypes.LogUp);
-                    uvsRight =  uvsLeft = _Rotate90DegreesUvs(uvsBottom);
-                    uvsBack = uvsFront =  CalculateBlockUvs(30);
+                    uvsRight = uvsLeft = _Rotate90DegreesUvs(uvsBottom);
+                    uvsBack = uvsFront = CalculateBlockUvs(30);
                     break;
                 case ChunkDataGenerator.BlockTypes.BookShelf:
                     uvsTop = CalculateBlockUvs(4);
@@ -492,12 +492,12 @@ namespace ChunkBodyGeneration
         }
         private static void _DrawBlockMesh(SurfaceTool surfaceTool, Vector3I blockSubPosition, ChunkDataGenerator.BlockTypes blockId, Array<bool> sidesToDraw)
         {
-            if(sidesToDraw.Count != 6)
+            if (sidesToDraw.Count != 6)
             {
                 throw new OutOfMemoryException("Sides to draw size should be 6");
             }
             bool[] bools = sidesToDraw.ToArray();
-            _DrawBlockMesh(surfaceTool,blockSubPosition,blockId,bools);
+            _DrawBlockMesh(surfaceTool, blockSubPosition, blockId, bools);
         }
 
         private static Vector2[] _Rotate90DegreesUvs(Vector2[] uvs)
@@ -526,7 +526,7 @@ namespace ChunkBodyGeneration
         {
             return blockId == ChunkDataGenerator.BlockTypes.Air || ((int)blockId > 25 && (int)blockId < 30);
         }
-        
+
     }
 }
 

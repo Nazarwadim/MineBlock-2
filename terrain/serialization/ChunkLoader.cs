@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace ChunksSerialization
+namespace Terrain.ChunksSerialization
 {
     public partial class ChunkLoader : GodotObject
     {
@@ -11,14 +11,14 @@ namespace ChunksSerialization
             if (FileAccess.FileExists(_chunkResourcePath))
             {
                 try
-                {   
+                {
                     ChunkResource resource = new();
                     resource.Load(_chunkResourcePath);
                     return resource;
                 }
                 catch (Exception)
                 {
-                    
+
                     DirAccess.RemoveAbsolute(_chunkResourcePath);
                     return null;
                 }

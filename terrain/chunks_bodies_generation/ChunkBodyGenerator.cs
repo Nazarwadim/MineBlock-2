@@ -1,14 +1,15 @@
+
 using System;
 using System.Linq;
 using System.Security.Cryptography;
 using Godot;
 using Godot.Collections;
-using ProcedureGeneration;
 
 
-namespace ChunkBodyGeneration
+
+namespace Terrain.ChunkBodyGeneration
 {
-
+	using ProcedureGeneration;
 	public partial class ChunkBodyGenerator : GodotObject
 	{
 		//Don't Add or remove elements, this will cause serious error!
@@ -22,12 +23,12 @@ namespace ChunkBodyGeneration
 			Up
 		}
 		public static ConcavePolygonShape3D GenerateChunkShape(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
-    	{
+		{
 			return ChunkShapeGenerator.GenerateChunkShape(chunkResource, chunksResources);
 		}
 
 		public static Mesh GenerateChunkMesh(ChunkResource chunkResource, Dictionary<Vector2I, ChunkResource> chunksResources)
-        {
+		{
 			return ChunksMeshGenerator.GenerateChunkMesh(chunkResource, chunksResources);
 		}
 		public static bool IsBlockNotStatic(ChunkDataGenerator.BlockTypes blockType)
@@ -68,7 +69,7 @@ namespace ChunkBodyGeneration
 		}
 		public static bool IsBlockSidesToCreate(Array<bool> sides)
 		{
-			if(sides.Count != 6)
+			if (sides.Count != 6)
 			{
 				throw new OutOfMemoryException("Should be 6 sides not " + Convert.ToString(sides.Count));
 			}

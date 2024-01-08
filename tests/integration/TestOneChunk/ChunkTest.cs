@@ -1,9 +1,10 @@
+namespace Terrain;
 using ChunkBodyGeneration;
 using Godot;
 using ProcedureGeneration;
 using System;
 
-public partial class Terrain : Node
+public partial class ChunkTest : Node
 {
     public override void _Ready()
     {

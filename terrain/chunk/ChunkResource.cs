@@ -1,3 +1,4 @@
+namespace Terrain;
 using System;
 using Godot;
 using ProcedureGeneration;
@@ -24,7 +25,7 @@ public partial class ChunkResource : Resource
         Data = new ChunkDataGenerator.BlockTypes[ChunkDataGenerator.CHUNK_SIZE, ChunkDataGenerator.CHUNK_HEIGHT, ChunkDataGenerator.CHUNK_SIZE];
         Buffer.BlockCopy(_data, 0, Data, 0, _data.Length);
     }
-    
+
     public ChunkResource(byte[,,] data, Vector2I position)
     {
         Position = position;
@@ -34,7 +35,7 @@ public partial class ChunkResource : Resource
 
     public Error Save(string resourcePath)
     {
-        
+
         _data = new byte[ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE];
         Buffer.BlockCopy(Data, 0, _data, 0, _data.Length);
         Error error = ResourceSaver.Save(this, resourcePath, ResourceSaver.SaverFlags.Compress);
@@ -45,7 +46,7 @@ public partial class ChunkResource : Resource
     public void Load(string resourcePath)
     {
         ChunkResource chunk = (ChunkResource)ResourceLoader.Load(resourcePath);
-        if(chunk._data.Length != ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE)
+        if (chunk._data.Length != ChunkDataGenerator.CHUNK_SIZE * ChunkDataGenerator.CHUNK_HEIGHT * ChunkDataGenerator.CHUNK_SIZE)
         {
             throw new Exception();
         }

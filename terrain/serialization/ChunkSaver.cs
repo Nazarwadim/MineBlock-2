@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 using Godot;
 using Godot.Collections;
 
-namespace ChunksSerialization
+namespace Terrain.ChunksSerialization
 {
     public partial class ChunkSaver : GodotObject
     {
@@ -12,6 +12,6 @@ namespace ChunksSerialization
             string _chunkResourcePath = chunksPath + GD.VarToStr(resource.Position) + ".res";
             resource.Save(_chunkResourcePath);
         }
-        
+
     }
 }
